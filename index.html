@@ -12,6 +12,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- YouTube IFrame API -->
+  <script src="https://www.youtube.com/iframe_api"></script>
   <style>
     * {
       margin: 0;
@@ -135,7 +137,7 @@
       }
     }
 
-    /* ----- HERO with VIDEO BACKGROUND (100% WORKING) ----- */
+    /* ----- HERO with YOUTUBE BACKGROUND (FIXED) ----- */
     .hero-video-wrapper {
       position: relative;
       width: 100%;
@@ -144,30 +146,41 @@
       background: #0b1e33; /* fallback color */
     }
     
-    #hero-video {
+    #youtube-player {
       position: absolute;
       top: 50%;
       left: 50%;
-      min-width: 100%;
-      min-height: 100%;
-      width: auto;
-      height: auto;
+      width: 100vw;
+      height: 100vh;
       transform: translate(-50%, -50%);
-      object-fit: cover;
+      pointer-events: none;
       opacity: 0.6;
     }
     
-    /* Fallback image if video doesn't load */
-    .video-fallback {
+    /* Fix for YouTube iframe sizing */
+    #youtube-player iframe {
       position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-image: url('https://images.unsplash.com/photo-1544723795-3fb6469f5b39?q=80&w=2078&auto=format&fit=crop');
-      background-size: cover;
-      background-position: center;
-      display: none;
+      top: 50%;
+      left: 50%;
+      width: 300vw;
+      height: 300vh;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+    }
+    
+    /* Adjust for different aspect ratios */
+    @media (min-aspect-ratio: 16/9) {
+      #youtube-player iframe {
+        height: 300vh;
+        width: calc(300vh * 16 / 9);
+      }
+    }
+    
+    @media (max-aspect-ratio: 16/9) {
+      #youtube-player iframe {
+        width: 300vw;
+        height: calc(300vw * 9 / 16);
+      }
     }
     
     .hero-overlay {
@@ -633,20 +646,11 @@
   </div>
 </div>
 
-<!-- HERO with VIDEO BACKGROUND - 100% WORKING -->
+<!-- HERO with YOUR YOUTUBE VIDEO -->
 <div class="hero-video-wrapper" id="home">
   
-  <!-- Video element with direct MP4 from reliable CDN -->
-  <video autoplay muted loop playsinline id="hero-video">
-    <!-- Using direct MP4 files from reliable sources -->
-    <source src="https://videos.pexels.com/video-files/854022/854022-hd_1920_1080_30fps.mp4" type="video/mp4">
-    <source src="https://videos.pexels.com/video-files/3251301/3251301-uhd_3840_2160_25fps.mp4" type="video/mp4">
-    <source src="https://videos.pexels.com/video-files/3251300/3251300-uhd_3840_2160_25fps.mp4" type="video/mp4">
-    Your browser does not support the video tag.
-  </video>
-  
-  <!-- Fallback image if video fails completely -->
-  <div class="video-fallback" id="video-fallback"></div>
+  <!-- Container for YouTube player -->
+  <div id="youtube-player"></div>
 
   <div class="hero-overlay">
     <div class="container hero-content">
@@ -930,55 +934,47 @@
   }, { threshold: 0.1 });
   faders.forEach(f => observer.observe(f));
 
-  // Force video to play with guaranteed method
-  document.addEventListener('DOMContentLoaded', function() {
-    const video = document.getElementById('hero-video');
-    const fallback = document.getElementById('video-fallback');
-    
-    // Set up error handling
-    video.addEventListener('error', function() {
-      console.log('Video failed to load, showing fallback image');
-      fallback.style.display = 'block';
-      video.style.display = 'none';
-    });
-    
-    // Try to play with multiple strategies
-    function playVideo() {
-      video.play().then(() => {
-        console.log('Video playing successfully');
-      }).catch(error => {
-        console.log('Video play failed:', error);
-        // Show fallback after multiple failures
-        setTimeout(() => {
-          if (video.paused) {
-            fallback.style.display = 'block';
-            video.style.display = 'none';
-          }
-        }, 2000);
-      });
-    }
-    
-    // Try to play immediately
-    playVideo();
-    
-    // Try on any user interaction
-    document.addEventListener('touchstart', function playOnTouch() {
-      playVideo();
-      document.removeEventListener('touchstart', playOnTouch);
-    }, { once: true });
-    
-    document.addEventListener('click', function playOnClick() {
-      playVideo();
-      document.removeEventListener('click', playOnClick);
-    }, { once: true });
-    
-    // Also try when page becomes visible
-    document.addEventListener('visibilitychange', function() {
-      if (!document.hidden) {
-        playVideo();
+  // YouTube Player API
+  let player;
+  
+  function onYouTubeIframeAPIReady() {
+    player = new YT.Player('youtube-player', {
+      videoId: 'LYncuYp0UVo',
+      playerVars: {
+        'autoplay': 1,
+        'controls': 0,
+        'disablekb': 1,
+        'enablejsapi': 1,
+        'iv_load_policy': 3,
+        'loop': 1,
+        'modestbranding': 1,
+        'playsinline': 1,
+        'rel': 0,
+        'showinfo': 0,
+        'mute': 1,
+        'playlist': 'LYncuYp0UVo' // Required for looping
+      },
+      events: {
+        'onReady': onPlayerReady,
+        'onError': onPlayerError
       }
     });
-  });
+  }
+
+  function onPlayerReady(event) {
+    event.target.playVideo();
+    // Ensure video plays at full quality
+    event.target.setPlaybackQuality('highres');
+  }
+
+  function onPlayerError(event) {
+    console.log('YouTube player error:', event.data);
+    // Fallback to a static background if video fails
+    document.getElementById('youtube-player').style.backgroundColor = '#0b1e33';
+  }
+
+  // Make sure YouTube API is loaded and ready
+  window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
 </script>
 </body>
 </html>
