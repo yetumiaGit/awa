@@ -137,27 +137,25 @@
       }
     }
 
-    /* ----- HERO with YOUTUBE BACKGROUND (FIXED) ----- */
+    /* ----- HERO with YOUTUBE BACKGROUND (FULL COVERAGE) ----- */
     .hero-video-wrapper {
       position: relative;
       width: 100%;
       height: 100vh;
       overflow: hidden;
-      background: #0b1e33; /* fallback color */
+      background: #0b1e33;
     }
     
     #youtube-player {
       position: absolute;
-      top: 50%;
-      left: 50%;
-      width: 100vw;
-      height: 100vh;
-      transform: translate(-50%, -50%);
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
       pointer-events: none;
       opacity: 0.6;
     }
     
-    /* Fix for YouTube iframe sizing */
     #youtube-player iframe {
       position: absolute;
       top: 50%;
@@ -168,7 +166,7 @@
       pointer-events: none;
     }
     
-    /* Adjust for different aspect ratios */
+    /* Optimized for all screen sizes */
     @media (min-aspect-ratio: 16/9) {
       #youtube-player iframe {
         height: 300vh;
@@ -189,66 +187,112 @@
       left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(11, 30, 51, 0.7);
+      background: linear-gradient(135deg, rgba(11, 30, 51, 0.85) 0%, rgba(11, 30, 51, 0.7) 100%);
       display: flex;
       align-items: center;
+      justify-content: flex-start;
       z-index: 10;
     }
+    
     .hero-content {
-      max-width: 700px;
+      max-width: 800px;
       color: white;
       padding: 0 20px;
+      margin-top: -5vh; /* Slight vertical adjustment for perfect centering */
     }
+    
     .hero-content h1 {
-      font-size: clamp(2.2rem, 8vw, 3.8rem);
-      line-height: 1.2;
-      margin-bottom: 1.2rem;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      font-size: clamp(2.5rem, 6vw, 4.5rem);
+      line-height: 1.1;
+      margin-bottom: 1.5rem;
+      text-shadow: 2px 2px 8px rgba(0,0,0,0.3);
+      font-weight: 700;
+      letter-spacing: -0.02em;
     }
-    .hero-content .accent { color: var(--electric); }
+    
+    .hero-content .accent { 
+      color: var(--electric);
+      position: relative;
+      display: inline-block;
+    }
+    
+    .hero-content .accent::after {
+      content: '';
+      position: absolute;
+      bottom: 5px;
+      left: 0;
+      width: 100%;
+      height: 8px;
+      background: rgba(245, 176, 27, 0.3);
+      z-index: -1;
+    }
+    
     .btn-group {
       display: flex;
       flex-wrap: wrap;
-      gap: 16px;
-      margin: 1.8rem 0 1.5rem;
+      gap: 20px;
+      margin: 2rem 0 1.5rem;
     }
+    
     .btn {
       display: inline-flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       background: white;
       color: var(--navy);
       font-weight: 600;
-      padding: 14px 32px;
+      padding: 16px 36px;
       border-radius: 60px;
       text-decoration: none;
-      transition: 0.2s ease;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: all 0.3s ease;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
       font-size: 1rem;
+      border: 2px solid transparent;
     }
+    
     .btn-primary {
       background: var(--electric);
       color: var(--navy);
+      border-color: var(--electric);
     }
+    
     .btn-primary:hover {
-      background: var(--electric-hover);
-      transform: scale(1.02);
+      background: transparent;
+      color: var(--electric);
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(245, 176, 27, 0.3);
     }
+    
     .btn-outline {
       background: transparent;
       color: white;
-      border: 1.5px solid rgba(255,255,255,0.3);
+      border: 2px solid rgba(255,255,255,0.3);
     }
+    
     .btn-outline:hover {
       border-color: var(--electric);
       color: var(--electric);
+      background: rgba(245, 176, 27, 0.1);
+      transform: translateY(-3px);
     }
+    
     .small-note {
-      font-size: 0.9rem;
-      opacity: 0.7;
+      font-size: 1rem;
+      opacity: 0.9;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
+      background: rgba(255,255,255,0.1);
+      padding: 10px 20px;
+      border-radius: 50px;
+      width: fit-content;
+      backdrop-filter: blur(5px);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    
+    .small-note i {
+      color: var(--electric);
+      font-size: 1.2rem;
     }
 
     /* sections */
@@ -629,6 +673,29 @@
     section, .footer, .cta-block, .why-list, .industry-tags, .contact-grid, .portfolio-grid, .team-grid {
       will-change: opacity, transform;
     }
+
+    /* mobile optimization */
+    @media (max-width: 768px) {
+      .hero-content {
+        margin-top: 0;
+        text-align: left;
+      }
+      
+      .hero-content h1 {
+        font-size: clamp(2rem, 8vw, 3rem);
+      }
+      
+      .btn-group {
+        flex-direction: column;
+        gap: 15px;
+      }
+      
+      .btn {
+        width: 100%;
+        justify-content: center;
+        padding: 14px 24px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -646,7 +713,7 @@
   </div>
 </div>
 
-<!-- HERO with YOUR YOUTUBE VIDEO -->
+<!-- HERO with YOUR YOUTUBE VIDEO - FULL BACKGROUND -->
 <div class="hero-video-wrapper" id="home">
   
   <!-- Container for YouTube player -->
@@ -655,10 +722,6 @@
   <div class="hero-overlay">
     <div class="container hero-content">
       <h1>Powering Infrastructure with <span class="accent">Precision</span> & Certified Expertise</h1>
-      <p>
-        AWA Electrical, Data and Maintenance Services PTY LTD delivers professional electrical, automation, 
-        and network solutions across South Africa with safety, compliance, and reliability at the core of every project.
-      </p>
 
       <div class="btn-group">
         <a href="#contact" class="btn btn-primary">
@@ -671,8 +734,8 @@
       </div>
 
       <div class="small-note">
-        <i class="fas fa-check-circle" style="color: var(--electric);"></i>
-        Certified. Reliable. Professional.
+        <i class="fas fa-check-circle"></i>
+        Certified • Reliable • Professional
       </div>
     </div>
   </div>
@@ -963,17 +1026,14 @@
 
   function onPlayerReady(event) {
     event.target.playVideo();
-    // Ensure video plays at full quality
     event.target.setPlaybackQuality('highres');
   }
 
   function onPlayerError(event) {
     console.log('YouTube player error:', event.data);
-    // Fallback to a static background if video fails
     document.getElementById('youtube-player').style.backgroundColor = '#0b1e33';
   }
 
-  // Make sure YouTube API is loaded and ready
   window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
 </script>
 </body>
