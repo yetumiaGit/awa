@@ -406,25 +406,177 @@
     }
     .industry-tag i { color: #2c3e4f; font-size: 1.2rem; }
 
-    /* portfolio */
+    /* ========== NEW PORTFOLIO CAROUSEL STYLES ========== */
     .portfolio-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
       gap: 25px;
     }
     .portfolio-item {
       background: white;
       border-radius: 30px;
-      padding: 30px 20px;
-      text-align: center;
+      padding: 20px 20px 25px;
       box-shadow: var(--card-shadow);
+      transition: all 0.2s;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
     }
-    .portfolio-icon {
-      font-size: 3rem;
-      color: var(--navy);
+    .portfolio-item:hover {
+      transform: scale(1.02);
+      box-shadow: 0 20px 30px -8px rgba(0,0,0,0.15);
+    }
+    /* carousel container inside card (preview) */
+    .card-carousel {
+      position: relative;
+      width: 100%;
+      height: 150px;
+      border-radius: 20px;
+      overflow: hidden;
       margin-bottom: 15px;
     }
-
+    .carousel-slides {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s ease;
+    }
+    .carousel-slide {
+      flex: 0 0 100%;
+      height: 100%;
+      background-size: cover;
+      background-position: center;
+      background-color: #d9e0eb; /* placeholder */
+    }
+    /* subtle navigation */
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 6px;
+      opacity: 0;
+      transition: opacity 0.2s;
+      pointer-events: none;
+    }
+    .card-carousel:hover .carousel-nav {
+      opacity: 1;
+      pointer-events: all;
+    }
+    .carousel-btn {
+      background: rgba(255,255,255,0.7);
+      backdrop-filter: blur(4px);
+      border: none;
+      border-radius: 50%;
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--navy);
+      font-size: 1rem;
+      cursor: pointer;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      transition: 0.15s;
+    }
+    .carousel-btn:hover {
+      background: white;
+      color: var(--electric);
+    }
+    /* overlay / expanded view */
+    .portfolio-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0,0,0,0.85);
+      backdrop-filter: blur(8px);
+      z-index: 2000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .overlay-content {
+      background: white;
+      max-width: 800px;
+      width: 90%;
+      border-radius: 48px;
+      padding: 30px;
+      position: relative;
+      box-shadow: 0 40px 60px rgba(0,0,0,0.5);
+    }
+    .close-overlay {
+      position: absolute;
+      top: 15px; right: 25px;
+      font-size: 2rem;
+      color: var(--navy);
+      cursor: pointer;
+      background: rgba(0,0,0,0.05);
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: 0.15s;
+    }
+    .close-overlay:hover {
+      background: var(--electric);
+      color: var(--navy);
+    }
+    .overlay-carousel {
+      position: relative;
+      width: 100%;
+      height: 350px;
+      border-radius: 30px;
+      overflow: hidden;
+      margin: 20px 0;
+    }
+    .overlay-slides {
+      display: flex;
+      width: 100%;
+      height: 100%;
+      transition: transform 0.5s ease;
+    }
+    .overlay-slide {
+      flex: 0 0 100%;
+      height: 100%;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: #eef2f6;
+    }
+    .overlay-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 0 16px;
+    }
+    .overlay-nav-btn {
+      background: rgba(255,255,255,0.9);
+      border: none;
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      font-size: 1.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--navy);
+      cursor: pointer;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+    .overlay-nav-btn:hover {
+      background: var(--electric);
+    }
+    .overlay-title {
+      font-size: 2rem;
+      margin-bottom: 5px;
+    }
     /* team */
     .team-grid {
       display: grid;
@@ -671,57 +823,31 @@
 </head>
 <body>
 
-<!-- MODERN TOP BAR with icons fixed on sides -->
+<!-- MODERN TOP BAR (unchanged) -->
 <div class="top-bar-modern">
-  <div class="top-bar-left">
-    <div class="icon-btn"><i class="fas fa-gas-pump"></i></div>
-  </div>
-  <div class="brand-core">
-    AWA <span>ELECTRICAL, DATA & MAINTENANCE</span> PTY LTD
-  </div>
-  <div class="top-bar-right">
-    <div class="icon-btn"><i class="fas fa-lightbulb"></i></div>
-  </div>
+  <div class="top-bar-left"><div class="icon-btn"><i class="fas fa-gas-pump"></i></div></div>
+  <div class="brand-core">AWA <span>ELECTRICAL, DATA & MAINTENANCE</span> PTY LTD</div>
+  <div class="top-bar-right"><div class="icon-btn"><i class="fas fa-lightbulb"></i></div></div>
 </div>
 
-<!-- HERO with YOUTUBE VIDEO - PERFECT COVERAGE -->
+<!-- HERO with YOUTUBE VIDEO (unchanged) -->
 <div class="hero-video-wrapper" id="home">
-  
-  <!-- Video container with perfect coverage -->
   <div class="video-container">
-    <iframe 
-      src="https://www.youtube.com/embed/LYncuYp0UVo?autoplay=1&mute=1&loop=1&playlist=LYncuYp0UVo&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1"
-      frameborder="0"
-      allow="autoplay; encrypted-media"
-      allowfullscreen>
-    </iframe>
+    <iframe src="https://www.youtube.com/embed/LYncuYp0UVo?autoplay=1&mute=1&loop=1&playlist=LYncuYp0UVo&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
   </div>
-
   <div class="hero-overlay">
     <div class="container hero-content">
       <h1>Powering Infrastructure with <span class="accent">Precision</span> and Specialized Expertise</h1>
-
       <div class="btn-group">
-        <a href="#contact" class="btn btn-primary">
-          <i class="fas fa-file-signature"></i> Request a Quote
-        </a>
-
-        <a href="#contact" class="btn btn-outline">
-          <i class="fas fa-phone-alt"></i> Contact Us
-        </a>
+        <a href="#contact" class="btn btn-primary"><i class="fas fa-file-signature"></i> Request a Quote</a>
+        <a href="#contact" class="btn btn-outline"><i class="fas fa-phone-alt"></i> Contact Us</a>
       </div>
-
-      <div class="small-note">
-        <i class="fas fa-check-circle"></i>
-        Certified • Reliable • Professional
-      </div>
+      <div class="small-note"><i class="fas fa-check-circle"></i> Certified • Reliable • Professional</div>
     </div>
   </div>
-
 </div>
 
-
-<!-- ABOUT SECTION -->
+<!-- ABOUT SECTION (unchanged) -->
 <section id="about" class="fade-up">
   <div class="container">
     <h2 class="section-title">About AWA Electrical</h2>
@@ -733,106 +859,57 @@
   </div>
 </section>
 
-<!-- SERVICES SECTION with visible icons -->
+<!-- SERVICES SECTION (unchanged) -->
 <section id="services" class="fade-up">
   <div class="container">
     <h2 class="section-title">Our Expertise</h2>
     <div class="card-grid">
-      <!-- card 1 -->
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-bolt"></i></div>
-        <h3>Electrical Installations & Certifications</h3>
-        <div class="service-short">Professional electrical services for domestic and hazardous environments.</div>
-        <button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button>
-        <div class="expanded-content">
-          <p>We provide certified electrical installations, inspections, and compliance services for both residential and high-risk hazardous environments. All work is performed according to South African electrical safety standards.</p>
-          <ul><li>Domestic electrical installations</li><li>Hazardous area electrical work</li><li>Electrical compliance certifications</li><li>Maintenance and fault finding</li></ul>
-        </div>
-      </div>
-      <!-- card 2 - Pumps Automation (icon visible) -->
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-water-pump"></i></div>
-        <h3>Pumps Automation</h3>
-        <div class="service-short">Intelligent pump control and automation systems.</div>
-        <button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button>
-        <div class="expanded-content">
-          <p>We design, install, and maintain automated pump systems for industrial and commercial applications, ensuring efficiency, reliability, and energy optimization.</p>
-          <ul><li>Pump control panels</li><li>PLC integration</li><li>System diagnostics</li><li>Automation upgrades</li></ul>
-        </div>
-      </div>
-      <!-- card 3 -->
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-network-wired"></i></div>
-        <h3>Network Data Cabling Installations</h3>
-        <div class="service-short">Structured and reliable network infrastructure.</div>
-        <button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button>
-        <div class="expanded-content">
-          <p>We install professional data cabling systems designed for speed, durability, and scalability in commercial and industrial environments.</p>
-          <ul><li>Structured cabling</li><li>LAN installations</li><li>Server room setup</li><li>Cable management systems</li></ul>
-        </div>
-      </div>
-      <!-- card 4 -->
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-wifi"></i></div>
-        <h3>Wireless E-Fuel Installations</h3>
-        <div class="service-short">Secure wireless fuel management systems.</div>
-        <button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button>
-        <div class="expanded-content">
-          <p>We install and configure wireless e-fuel systems that enhance monitoring, security, and operational control for fuel management environments.</p>
-        </div>
-      </div>
-      <!-- card 5 - Hazardous Petroleum (icon visible) -->
-      <div class="service-card">
-        <div class="service-icon"><i class="fas fa-oil-well"></i></div>
-        <h3>Hazardous Petroleum Electrical Installations</h3>
-        <div class="service-short">Certified hazardous petroleum environment specialist.</div>
-        <button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button>
-        <div class="expanded-content">
-          <p>Our technicians are qualified to perform electrical installations in hazardous petroleum environments, ensuring full compliance with safety and regulatory standards.</p>
-          <ul><li>Explosion-proof installations</li><li>Compliance inspections</li><li>Maintenance services</li><li>Safety-focused electrical systems</li></ul>
-        </div>
-      </div>
+      <!-- cards same as original, omitted for brevity but identical to provided code -->
+      <div class="service-card"><div class="service-icon"><i class="fas fa-bolt"></i></div><h3>Electrical Installations & Certifications</h3><div class="service-short">Professional electrical services for domestic and hazardous environments.</div><button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button><div class="expanded-content"><p>We provide certified electrical installations, inspections, and compliance services for both residential and high-risk hazardous environments. All work is performed according to South African electrical safety standards.</p><ul><li>Domestic electrical installations</li><li>Hazardous area electrical work</li><li>Electrical compliance certifications</li><li>Maintenance and fault finding</li></ul></div></div>
+      <div class="service-card"><div class="service-icon"><i class="fas fa-water-pump"></i></div><h3>Pumps Automation</h3><div class="service-short">Intelligent pump control and automation systems.</div><button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button><div class="expanded-content"><p>We design, install, and maintain automated pump systems for industrial and commercial applications, ensuring efficiency, reliability, and energy optimization.</p><ul><li>Pump control panels</li><li>PLC integration</li><li>System diagnostics</li><li>Automation upgrades</li></ul></div></div>
+      <div class="service-card"><div class="service-icon"><i class="fas fa-network-wired"></i></div><h3>Network Data Cabling Installations</h3><div class="service-short">Structured and reliable network infrastructure.</div><button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button><div class="expanded-content"><p>We install professional data cabling systems designed for speed, durability, and scalability in commercial and industrial environments.</p><ul><li>Structured cabling</li><li>LAN installations</li><li>Server room setup</li><li>Cable management systems</li></ul></div></div>
+      <div class="service-card"><div class="service-icon"><i class="fas fa-wifi"></i></div><h3>Wireless E-Fuel Installations</h3><div class="service-short">Secure wireless fuel management systems.</div><button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button><div class="expanded-content"><p>We install and configure wireless e-fuel systems that enhance monitoring, security, and operational control for fuel management environments.</p></div></div>
+      <div class="service-card"><div class="service-icon"><i class="fas fa-oil-well"></i></div><h3>Hazardous Petroleum Electrical Installations</h3><div class="service-short">Certified hazardous petroleum environment specialist.</div><button class="expand-btn" onclick="toggleExpand(this)" aria-expanded="false"><i class="fas fa-chevron-right"></i> Show details</button><div class="expanded-content"><p>Our technicians are qualified to perform electrical installations in hazardous petroleum environments, ensuring full compliance with safety and regulatory standards.</p><ul><li>Explosion-proof installations</li><li>Compliance inspections</li><li>Maintenance services</li><li>Safety-focused electrical systems</li></ul></div></div>
     </div>
   </div>
 </section>
 
-<!-- WHY CHOOSE + INDUSTRIES -->
+<!-- WHY CHOOSE + INDUSTRIES (unchanged) -->
 <section class="fade-up">
   <div class="container">
     <h2 class="section-title">Why Choose AWA</h2>
-    <ul class="why-list">
-      <li><i class="fas fa-check-circle"></i> Certified & Qualified Technicians</li>
-      <li><i class="fas fa-hard-hat"></i> Hazardous Environment Specialists</li>
-      <li><i class="fas fa-shield-alt"></i> Safety & Compliance Focused</li>
-      <li><i class="fas fa-medal"></i> Reliable & Professional Service</li>
-      <li><i class="fas fa-map-pin"></i> Based in Cape Town</li>
-      <li><i class="fas fa-tachometer-alt"></i> Fast Response & Support</li>
-    </ul>
+    <ul class="why-list"><li><i class="fas fa-check-circle"></i> Certified & Qualified Technicians</li><li><i class="fas fa-hard-hat"></i> Hazardous Environment Specialists</li><li><i class="fas fa-shield-alt"></i> Safety & Compliance Focused</li><li><i class="fas fa-medal"></i> Reliable & Professional Service</li><li><i class="fas fa-map-pin"></i> Based in Cape Town</li><li><i class="fas fa-tachometer-alt"></i> Fast Response & Support</li></ul>
     <h2 style="margin: 48px 0 20px; font-size: 2rem;">Industries We Serve</h2>
-    <div class="industry-tags">
-      <span class="industry-tag"><i class="fas fa-gas-pump"></i> Fuel Stations</span>
-      <span class="industry-tag"><i class="fas fa-industry"></i> Industrial Facilities</span>
-      <span class="industry-tag"><i class="fas fa-building"></i> Commercial Buildings</span>
-      <span class="industry-tag"><i class="fas fa-home"></i> Residential Properties</span>
-      <span class="industry-tag"><i class="fas fa-tools"></i> Maintenance Contractors</span>
-    </div>
+    <div class="industry-tags"><span class="industry-tag"><i class="fas fa-gas-pump"></i> Fuel Stations</span><span class="industry-tag"><i class="fas fa-industry"></i> Industrial Facilities</span><span class="industry-tag"><i class="fas fa-building"></i> Commercial Buildings</span><span class="industry-tag"><i class="fas fa-home"></i> Residential Properties</span><span class="industry-tag"><i class="fas fa-tools"></i> Maintenance Contractors</span></div>
   </div>
 </section>
 
-<!-- PORTFOLIO SECTION -->
+<!-- ========== PORTFOLIO SECTION (carousels + overlays) ========== -->
 <section class="fade-up">
   <div class="container">
     <h2 class="section-title">Our Portfolio</h2>
-    <div class="portfolio-grid">
-      <div class="portfolio-item"><i class="fas fa-solar-panel portfolio-icon"></i><h3>Solar Farm Install</h3><p>Commercial 500kW</p></div>
-      <div class="portfolio-item"><i class="fas fa-database portfolio-icon"></i><h3>Data Center Cabling</h3><p>V&A Waterfront</p></div>
-      <div class="portfolio-item"><i class="fas fa-oil-can portfolio-icon"></i><h3>Petroleum Depot</h3><p>Hazardous zone A</p></div>
-      <div class="portfolio-item"><i class="fas fa-robot portfolio-icon"></i><h3>PLC Automation</h3><p>Brewery line</p></div>
+    <div class="portfolio-grid" id="portfolioGrid">
+      <!-- each card will be populated by javascript with images and carousel logic -->
     </div>
   </div>
 </section>
 
-<!-- TEAM SECTION with diverse South African photos -->
+<!-- Overlay (hidden by default) -->
+<div id="portfolioOverlay" class="portfolio-overlay">
+  <div class="overlay-content">
+    <div class="close-overlay" onclick="closeOverlay()"><i class="fas fa-times"></i></div>
+    <h2 id="overlayTitle" class="overlay-title">Project</h2>
+    <div class="overlay-carousel">
+      <div class="overlay-slides" id="overlaySlides"></div>
+      <div class="overlay-nav">
+        <button class="overlay-nav-btn" id="overlayPrev"><i class="fas fa-chevron-left"></i></button>
+        <button class="overlay-nav-btn" id="overlayNext"><i class="fas fa-chevron-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- TEAM SECTION (unchanged) -->
 <section class="fade-up">
   <div class="container">
     <h2 class="section-title">Our Team</h2>
@@ -845,7 +922,7 @@
   </div>
 </section>
 
-<!-- CTA -->
+<!-- CTA (unchanged) -->
 <section class="fade-up">
   <div class="container cta-block">
     <h2>Need Certified Electrical & Technical Solutions?</h2>
@@ -854,7 +931,7 @@
   </div>
 </section>
 
-<!-- CONTACT + SOCIAL MEDIA -->
+<!-- CONTACT (unchanged) -->
 <section id="contact" class="fade-up">
   <div class="container">
     <h2 class="section-title">Contact AWA</h2>
@@ -866,16 +943,7 @@
           <div style="margin-bottom: 15px;"><input type="text" placeholder="Company Name"></div>
           <div style="margin-bottom: 15px;"><input type="email" placeholder="Email" required></div>
           <div style="margin-bottom: 15px;"><input type="tel" placeholder="Phone" required></div>
-          <div style="margin-bottom: 15px;">
-            <select>
-              <option>Service Required</option>
-              <option>Electrical Installations</option>
-              <option>Pumps Automation</option>
-              <option>Data Cabling</option>
-              <option>Wireless E-Fuel</option>
-              <option>Hazardous Petroleum</option>
-            </select>
-          </div>
+          <div style="margin-bottom: 15px;"><select><option>Service Required</option><option>Electrical Installations</option><option>Pumps Automation</option><option>Data Cabling</option><option>Wireless E-Fuel</option><option>Hazardous Petroleum</option></select></div>
           <div style="margin-bottom: 20px;"><textarea rows="3" placeholder="Message"></textarea></div>
           <button class="form-btn" type="submit">Send message <i class="fas fa-paper-plane"></i></button>
         </form>
@@ -886,11 +954,7 @@
           <a href="mailto:info@awa.co.za" class="contact-item"><i class="fas fa-envelope"></i> info@awa.co.za</a>
           <a href="https://wa.me/27611451959" class="contact-item"><i class="fab fa-whatsapp"></i> +27 61 145 1959</a>
         </div>
-        <div class="map-placeholder">
-          <i class="fas fa-map-marked-alt" style="margin-right: 10px;"></i> Cape Town, South Africa
-        </div>
-        
-        <!-- Social Media Icons -->
+        <div class="map-placeholder"><i class="fas fa-map-marked-alt" style="margin-right: 10px;"></i> Cape Town, South Africa</div>
         <div class="social-row">
           <a href="#" class="social-icon-modern"><i class="fab fa-facebook-f"></i></a>
           <a href="#" class="social-icon-modern"><i class="fab fa-instagram"></i></a>
@@ -903,22 +967,13 @@
   </div>
 </section>
 
-<!-- FOOTER -->
+<!-- FOOTER (unchanged) -->
 <footer class="footer fade-up">
   <div class="footer-grid">
-    <div class="footer-company">
-      AWA ELECTRICAL, DATA AND MAINTENANCE SERVICES PTY LTD
-      <small>Cape Town, South Africa</small>
-    </div>
-    <div class="footer-tagline">
-      Certified Electrical & Technical Infrastructure Solutions
-    </div>
-    <div class="footer-links">
-      <a href="#">Privacy Policy</a> • <a href="#">Terms & Conditions</a>
-    </div>
-    <div class="footer-copy">
-      &copy; 2025 AWA Electrical. All rights reserved.
-    </div>
+    <div class="footer-company">AWA ELECTRICAL, DATA AND MAINTENANCE SERVICES PTY LTD <small>Cape Town, South Africa</small></div>
+    <div class="footer-tagline">Certified Electrical & Technical Infrastructure Solutions</div>
+    <div class="footer-links"><a href="#">Privacy Policy</a> • <a href="#">Terms & Conditions</a></div>
+    <div class="footer-copy">&copy; 2025 AWA Electrical. All rights reserved.</div>
   </div>
 </footer>
 
@@ -935,6 +990,7 @@
 
 <!-- SCRIPTS -->
 <script>
+  // Original toggleExpand
   function toggleExpand(btn) {
     const expanded = btn.getAttribute('aria-expanded') === 'true' ? false : true;
     btn.setAttribute('aria-expanded', expanded);
@@ -947,6 +1003,164 @@
       btn.innerHTML = '<i class="fas fa-chevron-right"></i> Show details';
     }
   }
+
+  // ---------- PORTFOLIO CAROUSEL & OVERLAY ----------
+  const projects = [
+    { name: "Solar Farm Install", desc: "Commercial 500kW", images: ["https://picsum.photos/id/100/600/400", "https://picsum.photos/id/101/600/400", "https://picsum.photos/id/102/600/400", "https://picsum.photos/id/103/600/400", "https://picsum.photos/id/104/600/400"] },
+    { name: "Data Center Cabling", desc: "V&A Waterfront", images: ["https://picsum.photos/id/200/600/400", "https://picsum.photos/id/201/600/400", "https://picsum.photos/id/202/600/400", "https://picsum.photos/id/203/600/400", "https://picsum.photos/id/204/600/400"] },
+    { name: "Petroleum Depot", desc: "Hazardous zone A", images: ["https://picsum.photos/id/300/600/400", "https://picsum.photos/id/301/600/400", "https://picsum.photos/id/302/600/400", "https://picsum.photos/id/303/600/400", "https://picsum.photos/id/304/600/400"] },
+    { name: "PLC Automation", desc: "Brewery line", images: ["https://picsum.photos/id/400/600/400", "https://picsum.photos/id/401/600/400", "https://picsum.photos/id/402/600/400", "https://picsum.photos/id/403/600/400", "https://picsum.photos/id/404/600/400"] }
+  ];
+
+  function buildPortfolio() {
+    const grid = document.getElementById('portfolioGrid');
+    grid.innerHTML = '';
+    projects.forEach((proj, idx) => {
+      const card = document.createElement('div');
+      card.className = 'portfolio-item';
+      card.setAttribute('data-index', idx);
+      // carousel container
+      const carouselDiv = document.createElement('div');
+      carouselDiv.className = 'card-carousel';
+      const slidesDiv = document.createElement('div');
+      slidesDiv.className = 'carousel-slides';
+      slidesDiv.id = `card-slides-${idx}`;
+      proj.images.forEach(imgUrl => {
+        const slide = document.createElement('div');
+        slide.className = 'carousel-slide';
+        slide.style.backgroundImage = `url('${imgUrl}')`;
+        slidesDiv.appendChild(slide);
+      });
+      carouselDiv.appendChild(slidesDiv);
+      // nav buttons
+      const nav = document.createElement('div');
+      nav.className = 'carousel-nav';
+      nav.innerHTML = `<button class="carousel-btn" onclick="event.stopPropagation(); cardPrev(${idx})"><i class="fas fa-chevron-left"></i></button>
+                       <button class="carousel-btn" onclick="event.stopPropagation(); cardNext(${idx})"><i class="fas fa-chevron-right"></i></button>`;
+      carouselDiv.appendChild(nav);
+      card.appendChild(carouselDiv);
+      // title & desc
+      const title = document.createElement('h3');
+      title.innerText = proj.name;
+      const desc = document.createElement('p');
+      desc.innerText = proj.desc;
+      card.appendChild(title);
+      card.appendChild(desc);
+      // click to open overlay
+      card.onclick = (e) => openOverlay(idx);
+      grid.appendChild(card);
+    });
+    // start auto slide for each card
+    projects.forEach((_, idx) => {
+      startCardAuto(idx);
+    });
+  }
+
+  let cardIntervals = [];
+  function startCardAuto(idx) {
+    if (cardIntervals[idx]) clearInterval(cardIntervals[idx]);
+    cardIntervals[idx] = setInterval(() => {
+      const slides = document.getElementById(`card-slides-${idx}`);
+      if (!slides) return;
+      const total = slides.children.length;
+      let current = Math.round(parseInt(slides.dataset.pos || '0') / 100) || 0;
+      current = (current + 1) % total;
+      slides.style.transform = `translateX(-${current * 100}%)`;
+      slides.dataset.pos = current * 100;
+    }, 4000);
+  }
+
+  window.cardPrev = (idx) => {
+    const slides = document.getElementById(`card-slides-${idx}`);
+    const total = slides.children.length;
+    let current = Math.round(parseInt(slides.dataset.pos || '0') / 100) || 0;
+    current = (current - 1 + total) % total;
+    slides.style.transform = `translateX(-${current * 100}%)`;
+    slides.dataset.pos = current * 100;
+    // reset interval
+    clearInterval(cardIntervals[idx]);
+    startCardAuto(idx);
+  };
+  window.cardNext = (idx) => {
+    const slides = document.getElementById(`card-slides-${idx}`);
+    const total = slides.children.length;
+    let current = Math.round(parseInt(slides.dataset.pos || '0') / 100) || 0;
+    current = (current + 1) % total;
+    slides.style.transform = `translateX(-${current * 100}%)`;
+    slides.dataset.pos = current * 100;
+    clearInterval(cardIntervals[idx]);
+    startCardAuto(idx);
+  };
+
+  // Overlay functions
+  let currentOverlayIndex = 0;
+  const overlay = document.getElementById('portfolioOverlay');
+  const overlayTitle = document.getElementById('overlayTitle');
+  const overlaySlides = document.getElementById('overlaySlides');
+  let overlayInterval;
+
+  function openOverlay(idx) {
+    currentOverlayIndex = idx;
+    const proj = projects[idx];
+    overlayTitle.innerText = proj.name;
+    overlaySlides.innerHTML = '';
+    proj.images.forEach(url => {
+      const div = document.createElement('div');
+      div.className = 'overlay-slide';
+      div.style.backgroundImage = `url('${url}')`;
+      overlaySlides.appendChild(div);
+    });
+    overlaySlides.style.transform = 'translateX(0%)';
+    overlaySlides.dataset.pos = 0;
+    overlay.style.display = 'flex';
+    // auto slide overlay
+    if (overlayInterval) clearInterval(overlayInterval);
+    overlayInterval = setInterval(() => {
+      const total = overlaySlides.children.length;
+      let current = Math.round(parseInt(overlaySlides.dataset.pos || '0') / 100) || 0;
+      current = (current + 1) % total;
+      overlaySlides.style.transform = `translateX(-${current * 100}%)`;
+      overlaySlides.dataset.pos = current * 100;
+    }, 4000);
+  }
+
+  window.closeOverlay = function() {
+    overlay.style.display = 'none';
+    if (overlayInterval) clearInterval(overlayInterval);
+  };
+
+  document.getElementById('overlayPrev').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const total = overlaySlides.children.length;
+    let current = Math.round(parseInt(overlaySlides.dataset.pos || '0') / 100) || 0;
+    current = (current - 1 + total) % total;
+    overlaySlides.style.transform = `translateX(-${current * 100}%)`;
+    overlaySlides.dataset.pos = current * 100;
+    clearInterval(overlayInterval);
+    overlayInterval = setInterval(() => {
+      const t = overlaySlides.children.length;
+      let cur = Math.round(parseInt(overlaySlides.dataset.pos || '0') / 100) || 0;
+      cur = (cur + 1) % t;
+      overlaySlides.style.transform = `translateX(-${cur * 100}%)`;
+      overlaySlides.dataset.pos = cur * 100;
+    }, 4000);
+  });
+  document.getElementById('overlayNext').addEventListener('click', (e) => {
+    e.stopPropagation();
+    const total = overlaySlides.children.length;
+    let current = Math.round(parseInt(overlaySlides.dataset.pos || '0') / 100) || 0;
+    current = (current + 1) % total;
+    overlaySlides.style.transform = `translateX(-${current * 100}%)`;
+    overlaySlides.dataset.pos = current * 100;
+    clearInterval(overlayInterval);
+    overlayInterval = setInterval(() => {
+      const t = overlaySlides.children.length;
+      let cur = Math.round(parseInt(overlaySlides.dataset.pos || '0') / 100) || 0;
+      cur = (cur + 1) % t;
+      overlaySlides.style.transform = `translateX(-${cur * 100}%)`;
+      overlaySlides.dataset.pos = cur * 100;
+    }, 4000);
+  });
 
   // Active nav highlight
   const sections = document.querySelectorAll('section[id], footer, .hero-video-wrapper');
@@ -974,6 +1188,9 @@
     });
   }, { threshold: 0.1 });
   faders.forEach(f => observer.observe(f));
+
+  // Initialize portfolio
+  buildPortfolio();
 </script>
 </body>
 </html>
