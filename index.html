@@ -12,9 +12,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-  <!-- YouTube IFrame API -->
-  <script src="https://www.youtube.com/iframe_api"></script>
   <style>
+    /* RESET - ensure no margins or padding */
     * {
       margin: 0;
       padding: 0;
@@ -28,6 +27,7 @@
       line-height: 1.5;
       scroll-behavior: smooth;
       padding-bottom: 70px;
+      overflow-x: hidden;
     }
 
     :root {
@@ -146,30 +146,28 @@
       background: #0b1e33;
     }
     
-    #youtube-player {
-      position: absolute;
-      top: 0;
-      left: 0;
+    /* Video container with 16:9 aspect ratio */
+    .video-container {
+      position: relative;
       width: 100%;
       height: 100%;
-      pointer-events: none;
-      opacity: 0.6;
+      overflow: hidden;
     }
     
-    #youtube-player iframe {
+    .video-container iframe {
       position: absolute;
       top: 50%;
       left: 50%;
       width: 100vw;
       height: 100vh;
-      transform: translate(-50%, -50%) scale(1.5);
+      transform: translate(-50%, -50%);
       pointer-events: none;
-      object-fit: cover;
+      opacity: 0.6;
     }
     
-    /* Ensure video covers entire space on all devices */
+    /* Ensure video covers the entire area on all screens */
     @media (min-aspect-ratio: 16/9) {
-      #youtube-player iframe {
+      .video-container iframe {
         height: 56.25vw; /* 9/16 * 100 = 56.25 */
         width: 100vw;
         min-height: 100vh;
@@ -178,7 +176,7 @@
     }
     
     @media (max-aspect-ratio: 16/9) {
-      #youtube-player iframe {
+      .video-container iframe {
         width: 177.78vh; /* 16/9 * 100 = 177.78 */
         height: 100vh;
         min-width: 100vw;
@@ -686,11 +684,18 @@
   </div>
 </div>
 
-<!-- HERO with YOUR YOUTUBE VIDEO - PERFECT COVERAGE -->
+<!-- HERO with YOUTUBE VIDEO - PERFECT COVERAGE -->
 <div class="hero-video-wrapper" id="home">
   
-  <!-- Container for YouTube player -->
-  <div id="youtube-player"></div>
+  <!-- Video container with perfect coverage -->
+  <div class="video-container">
+    <iframe 
+      src="https://www.youtube.com/embed/LYncuYp0UVo?autoplay=1&mute=1&loop=1&playlist=LYncuYp0UVo&controls=0&showinfo=0&rel=0&iv_load_policy=3&modestbranding=1&playsinline=1"
+      frameborder="0"
+      allow="autoplay; encrypted-media"
+      allowfullscreen>
+    </iframe>
+  </div>
 
   <div class="hero-overlay">
     <div class="container hero-content">
@@ -969,45 +974,6 @@
     });
   }, { threshold: 0.1 });
   faders.forEach(f => observer.observe(f));
-
-  // YouTube Player API
-  let player;
-  
-  function onYouTubeIframeAPIReady() {
-    player = new YT.Player('youtube-player', {
-      videoId: 'LYncuYp0UVo',
-      playerVars: {
-        'autoplay': 1,
-        'controls': 0,
-        'disablekb': 1,
-        'enablejsapi': 1,
-        'iv_load_policy': 3,
-        'loop': 1,
-        'modestbranding': 1,
-        'playsinline': 1,
-        'rel': 0,
-        'showinfo': 0,
-        'mute': 1,
-        'playlist': 'LYncuYp0UVo'
-      },
-      events: {
-        'onReady': onPlayerReady,
-        'onError': onPlayerError
-      }
-    });
-  }
-
-  function onPlayerReady(event) {
-    event.target.playVideo();
-    event.target.setPlaybackQuality('highres');
-  }
-
-  function onPlayerError(event) {
-    console.log('YouTube player error:', event.data);
-    document.getElementById('youtube-player').style.backgroundColor = '#0b1e33';
-  }
-
-  window.onYouTubeIframeAPIReady = onYouTubeIframeAPIReady;
 </script>
 </body>
 </html>
