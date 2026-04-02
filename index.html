@@ -159,26 +159,31 @@
             transform: scale(1.02);
             box-shadow: 0 20px 25px -12px rgba(0,0,0,0.2);
         }
-        .logo-container img {
-            max-height: 45px;
+        
+        /* Logo container - sans fond, taille entière */
+        .logo-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .logo-img {
+            max-height: 42px;
             width: auto;
-            border-radius: 10px;
+            display: block;
+            object-fit: contain;
         }
         @media (max-width: 768px) {
-            .logo-container img {
-                max-height: 38px;
+            .logo-img {
+                max-height: 36px;
             }
         }
         
-        /* Hero overlay personnalisé pour la nouvelle bannière */
+        /* Hero overlay */
         .hero-overlay {
             background: linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.5) 100%);
         }
         
-        /* Styles pour la galerie dynamique des femmes */
-        .floating-image {
-            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
-        }
+        /* Animations pour la galerie des femmes */
         .image-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -186,7 +191,6 @@
             transform: translateY(-8px);
             box-shadow: 0 25px 35px -12px rgba(0,0,0,0.25);
         }
-        /* Animation au scroll personnalisée via JS */
         .scroll-reveal {
             opacity: 0;
             transform: translateY(30px);
@@ -213,6 +217,17 @@
         .scroll-reveal-right.revealed {
             opacity: 1;
             transform: translateX(0);
+        }
+        
+        /* Footer styles */
+        .footer-link {
+            transition: color 0.2s ease;
+        }
+        .footer-link:hover {
+            color: #7c3aed;
+        }
+        .dark .footer-link:hover {
+            color: #a78bfa;
         }
     </style>
 </head>
@@ -316,7 +331,6 @@
             founder: "https://live.staticflickr.com/65535/55183705353_ecd5a34c4e_b.jpg",
             logo: "https://live.staticflickr.com/65535/55183826143_81ea7a2b1f_b.jpg",
             heroBg: "https://live.staticflickr.com/65535/55182865082_ee8207c50f_b.jpg",
-            // Nouvelles images pour la section "Rejoignez la force des femmes"
             womenGrid: [
                 "https://live.staticflickr.com/65535/55184052269_9708a63f6d_b.jpg",
                 "https://live.staticflickr.com/65535/55182910822_a1fc008839_b.jpg",
@@ -416,9 +430,8 @@
             );
         };
 
-        // --- SECTION REJOINDRE LA FORCE DES FEMMES (NOUVELLE VERSION AVEC IMAGES FLICKR ET ANIMATIONS) ---
+        // --- SECTION REJOINDRE LA FORCE DES FEMMES ---
         const JoinForceSection = ({ setPage, scrollToTop }) => {
-            // Positions et délais pour chaque image (effet de décalage dynamique)
             const images = FLICKR_IMAGES.womenGrid;
             const positions = [
                 { className: "col-span-1 row-span-1 translate-y-0", delay: 0, rotate: "-2deg", zIndex: 10 },
@@ -523,7 +536,7 @@
             </section>
         );
 
-        // --- CHAT MODAL --- (inchangé)
+        // --- CHAT MODAL ---
         const ChatModal = ({ isOpen, onClose }) => {
             const [messages, setMessages] = useState([{ text: "Bonjour ! Je suis l'assistante virtuelle de la CIFEPE. Comment puis-je vous aider ?", from: 'bot' }]);
             const [input, setInput] = useState("");
@@ -580,7 +593,7 @@
             ); 
         };
 
-        // --- AUTRES PAGES (Ebooks, Prières, Join) ---
+        // --- AUTRES PAGES ---
         const EbookPage = ({ addToast, scrollToTop }) => { useEffect(() => { scrollToTop(); }, [scrollToTop]); return (<motion.div className="max-w-7xl mx-auto px-4 py-12"><SectionTitle title="Bibliothèque CIFEPE" subtitle="Livres électroniques gratuits sur les Évangiles et la vie communautaire." /><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mt-8">{CONTENT.ebooks.map((book, idx) => (<Card key={idx} hover className="flex flex-col h-full"><div className="rounded-xl overflow-hidden mb-4 shadow-md book-cover"><img src={book.cover} alt={book.title} className="w-full h-48 md:h-56 object-cover" /></div><h3 className="text-lg md:text-xl font-bold mb-2">{book.title}</h3><p className="text-gray-500 text-xs md:text-sm mb-5 flex-grow">{book.desc}</p><Button variant="secondary" className="w-full py-2 text-xs md:text-sm" icon="Download" onClick={() => addToast(`📖 "${book.title}" téléchargement simulé`, "success")}>Télécharger gratuit</Button></Card>))}</div></motion.div>); };
         
         const PrayersPage = ({ addToast, scrollToTop }) => { useEffect(() => { scrollToTop(); }, [scrollToTop]); return (<motion.div className="max-w-4xl mx-auto px-4 py-12"><SectionTitle title="Temps de Prière" subtitle="Sessions en ligne, 4 fois par semaine." /><div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-12">{['Lundi 19h', 'Mercredi 19h', 'Vendredi 20h', 'Dimanche 09h'].map((time,i)=><Card key={i} className="flex items-center gap-3 md:gap-4 p-4 md:p-5"><Icon name="Clock" className="text-primary" size={24} /><div><h3 className="font-bold text-sm md:text-base">{time}</h3><p className="text-xs text-gray-500">Enseignement & Intercession</p><button className="text-primary text-xs md:text-sm font-medium mt-1">Rejoindre</button></div></Card>)}</div><Card><div><h3 className="text-xl md:text-2xl font-bold mb-2">Besoin de prière ?</h3><form onSubmit={(e)=>{e.preventDefault();addToast("Demande envoyée, nous prions pour vous.","success");}} className="space-y-4"><input placeholder="Nom" className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" /><textarea rows="2" placeholder="Sujet de prière" className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base"></textarea><Button type="submit">Envoyer</Button></form></div></Card></motion.div>); };
@@ -633,13 +646,84 @@
             const navItems = [{ label: 'Accueil', id: 'home' },{ label: 'E-books', id: 'ebooks' },{ label: 'Galerie', id: 'gallery' },{ label: 'Prières', id: 'prayers' },{ label: 'Don', id: 'donate' }];
             const handleNav = (id) => { setPage(id); setMobileMenuOpen(false); scrollToTop(); };
             
+            // Footer component with logo, links and copyright
+            const Footer = () => (
+                <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 pt-12 pb-6">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+                            {/* Logo and description */}
+                            <div className="col-span-1 md:col-span-1">
+                                <div className="flex items-center gap-3 mb-4">
+                                    <div className="logo-container">
+                                        <img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" />
+                                    </div>
+                                    <span className="font-bold text-xl text-gray-800 dark:text-white">CIFEPE</span>
+                                </div>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
+                                    Communauté Internationale des Femmes de Plein Évangile - Transformons des vies par la foi et l'action.
+                                </p>
+                            </div>
+                            
+                            {/* Quick links */}
+                            <div>
+                                <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Liens rapides</h3>
+                                <ul className="space-y-2">
+                                    {navItems.map(item => (
+                                        <li key={item.id}>
+                                            <button onClick={() => handleNav(item.id)} className="footer-link text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm transition">
+                                                {item.label}
+                                            </button>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                            
+                            {/* Contact */}
+                            <div>
+                                <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Contact</h3>
+                                <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+                                    <li className="flex items-center gap-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+                                        contact@cifepe.org
+                                    </li>
+                                    <li className="flex items-center gap-2">
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+                                        Lubumbashi, RDC
+                                    </li>
+                                </ul>
+                            </div>
+                            
+                            {/* Social */}
+                            <div>
+                                <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Suivez-nous</h3>
+                                <div className="flex gap-3">
+                                    <SocialLink platform="X" href="#" />
+                                    <SocialLink platform="Facebook" href="#" />
+                                    <SocialLink platform="YouTube" href="#" />
+                                    <SocialLink platform="Instagram" href="#" />
+                                </div>
+                            </div>
+                        </div>
+                        
+                        {/* Copyright */}
+                        <div className="border-t border-gray-200 dark:border-gray-800 pt-6 text-center">
+                            <p className="text-gray-400 dark:text-gray-500 text-sm">
+                                Copyright © 2026 CIFEPE. Tous droits réservés.
+                            </p>
+                        </div>
+                    </div>
+                </footer>
+            );
+            
             return (
                 <div className="min-h-screen flex flex-col">
                     <nav className="fixed top-0 w-full z-40 glass">
                         <div className="max-w-7xl mx-auto px-4">
                             <div className="flex justify-between items-center h-14">
                                 <div className="flex items-center gap-2 cursor-pointer" onClick={()=>handleNav('home')}>
-                                    <div className="logo-container w-8 h-8 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center"><img src={FLICKR_IMAGES.logo} alt="Logo CIFEPE" className="w-full h-full object-cover" /></div>
+                                    <div className="logo-container">
+                                        <img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" />
+                                    </div>
                                     <span className="font-bold text-base">CIFEPE</span>
                                 </div>
                                 <div className="hidden md:flex items-center gap-4">
@@ -656,7 +740,7 @@
                         </div>
                     </nav>
                     <main className="flex-grow pt-14"><AnimatePresence mode="wait">{renderPage()}</AnimatePresence></main>
-                    <footer className="bg-white dark:bg-gray-900 border-t py-8"><div className="max-w-7xl mx-auto px-4 text-center"><div className="flex justify-center gap-3 mb-4"><SocialLink platform="X" href="#"/><SocialLink platform="Facebook" href="#"/><SocialLink platform="YouTube" href="#"/><SocialLink platform="Instagram" href="#"/></div><p className="text-sm text-gray-500">contact@cifepe.org • Lubumbashi, RDC</p><p className="text-xs text-gray-400 mt-3">© 2025 CIFEPE. Tous droits réservés.</p></div></footer>
+                    <Footer />
                     <button onClick={() => setIsChatOpen(true)} className="fixed bottom-5 right-5 z-50 w-14 h-14 bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-all duration-300"><Icon name="MessageCircle" size={26} /></button>
                     <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
                     <AnimatePresence>{toast && (<motion.div initial={{ opacity:0,y:50}} animate={{ opacity:1,y:0}} exit={{ opacity:0,y:50}} className={`fixed bottom-24 right-4 px-4 py-2 rounded-xl shadow-lg flex items-center gap-2 z-50 text-sm ${toast.type==='success'?'bg-green-600 text-white':'bg-red-600'}`}><Icon name="CheckCircle"/><span>{toast.msg}</span></motion.div>)}</AnimatePresence>
