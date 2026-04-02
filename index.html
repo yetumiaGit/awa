@@ -52,6 +52,19 @@
             -webkit-tap-highlight-color: transparent;
         }
         
+        /* Force le reflow/redraw immédiat pour éviter le décalage initial */
+        img, .grid, .flex, .container, section, div {
+            will-change: transform, opacity;
+        }
+        
+        /* Éviter les décalages de layout */
+        img {
+            aspect-ratio: attr(width) / attr(height);
+            max-width: 100%;
+            height: auto;
+            display: block;
+        }
+        
         .glass { 
             background: rgba(255, 255, 255, 0.95); 
             backdrop-filter: blur(20px); 
@@ -147,7 +160,7 @@
             }
         }
         
-        /* Style pour les images Flickr responsives */
+        /* Style pour les images responsives */
         .flickr-image {
             width: 100%;
             height: auto;
@@ -160,7 +173,7 @@
             box-shadow: 0 20px 25px -12px rgba(0,0,0,0.2);
         }
         
-        /* Logo container - sans fond, taille entière */
+        /* Logo container */
         .logo-container {
             display: flex;
             align-items: center;
@@ -228,6 +241,41 @@
         }
         .dark .footer-link:hover {
             color: #a78bfa;
+        }
+        
+        /* Animation zoom in/out continue pour les images de la section "Rejoindre" */
+        @keyframes gentleZoom {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.08);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+        
+        .zoom-animate {
+            animation: gentleZoom 8s ease-in-out infinite;
+        }
+        
+        /* Animation de balayage latéral subtile pour la photo de la fondatrice */
+        @keyframes subtleSway {
+            0% {
+                transform: translateX(-3%) scale(1.02);
+            }
+            50% {
+                transform: translateX(3%) scale(1.02);
+            }
+            100% {
+                transform: translateX(-3%) scale(1.02);
+            }
+        }
+        
+        .founder-sway {
+            animation: subtleSway 12s ease-in-out infinite;
+            transform-origin: center center;
         }
     </style>
 </head>
@@ -326,10 +374,10 @@
             ]
         };
 
-        // URLs des images Flickr
+        // URLs des images (nouveau logo Imgur)
         const FLICKR_IMAGES = {
             founder: "https://live.staticflickr.com/65535/55183705353_ecd5a34c4e_b.jpg",
-            logo: "https://live.staticflickr.com/65535/55183826143_81ea7a2b1f_b.jpg",
+            logo: "https://i.imgur.com/T5n9T0o.png",
             heroBg: "https://live.staticflickr.com/65535/55182865082_ee8207c50f_b.jpg",
             womenGrid: [
                 "https://live.staticflickr.com/65535/55184052269_9708a63f6d_b.jpg",
@@ -403,7 +451,7 @@
             );
         };
 
-        // --- FOUNDER SECTION ---
+        // --- FOUNDER SECTION (sans lien flickr + animation latérale) ---
         const FounderPreview = () => {
             const [expanded, setExpanded] = useState(false);
             const shortBio = "Je m’appelle Kalassa Yasso, Congolaise, née le 26 octobre 1954 à Likasi, fondatrice et conseillère de la CIFEPE (Communauté Internationale des Femmes de Plein Évangile) et initiatrice de La Maison du Trésor. Mon parcours est celui d’une femme ordinaire, transformée par une rencontre extraordinaire avec Jésus-Christ.";
@@ -413,9 +461,13 @@
                     <div className="max-w-6xl mx-auto px-4">
                         <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
                             <div className="order-2 md:order-1">
-                                <a href="https://www.flickr.com/photos/203718138@N04/55183705353/in/dateposted-public/" target="_blank" rel="noopener noreferrer" className="block rounded-2xl shadow-2xl overflow-hidden border-4 border-white dark:border-gray-700 transition-transform duration-300 hover:scale-[1.02]">
-                                    <img src={FLICKR_IMAGES.founder} alt="Clotilde Kalassa - Fondatrice CIFEPE" className="w-full object-cover h-80 md:h-96 object-top" />
-                                </a>
+                                <div className="block rounded-2xl shadow-2xl overflow-hidden border-4 border-white dark:border-gray-700 transition-transform duration-300 hover:scale-[1.02]">
+                                    <img 
+                                        src={FLICKR_IMAGES.founder} 
+                                        alt="Clotilde Kalassa - Fondatrice CIFEPE" 
+                                        className="w-full object-cover h-80 md:h-96 object-top founder-sway" 
+                                    />
+                                </div>
                             </div>
                             <div className="order-1 md:order-2">
                                 <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs md:text-sm font-semibold mb-4">✨ Notre Fondatrice</div>
@@ -430,15 +482,15 @@
             );
         };
 
-        // --- SECTION REJOINDRE LA FORCE DES FEMMES ---
+        // --- SECTION REJOINDRE LA FORCE DES FEMMES (avec zoom in/out continu) ---
         const JoinForceSection = ({ setPage, scrollToTop }) => {
             const images = FLICKR_IMAGES.womenGrid;
             const positions = [
-                { className: "col-span-1 row-span-1 translate-y-0", delay: 0, rotate: "-2deg", zIndex: 10 },
-                { className: "col-span-1 row-span-1 -translate-y-3 md:-translate-y-4", delay: 100, rotate: "1deg", zIndex: 20 },
-                { className: "col-span-1 row-span-1 translate-y-2 md:translate-y-3", delay: 200, rotate: "-1deg", zIndex: 15 },
-                { className: "col-span-1 row-span-1 -translate-y-1 md:-translate-y-2", delay: 150, rotate: "2deg", zIndex: 25 },
-                { className: "col-span-1 row-span-1 translate-y-4 md:translate-y-5", delay: 250, rotate: "0deg", zIndex: 5 }
+                { className: "col-span-1 row-span-1 translate-y-0", delay: 0, rotate: "-2deg", zIndex: 10, zoomDelay: "0s" },
+                { className: "col-span-1 row-span-1 -translate-y-3 md:-translate-y-4", delay: 100, rotate: "1deg", zIndex: 20, zoomDelay: "0.5s" },
+                { className: "col-span-1 row-span-1 translate-y-2 md:translate-y-3", delay: 200, rotate: "-1deg", zIndex: 15, zoomDelay: "1s" },
+                { className: "col-span-1 row-span-1 -translate-y-1 md:-translate-y-2", delay: 150, rotate: "2deg", zIndex: 25, zoomDelay: "0.3s" },
+                { className: "col-span-1 row-span-1 translate-y-4 md:translate-y-5", delay: 250, rotate: "0deg", zIndex: 5, zoomDelay: "0.8s" }
             ];
             
             return (
@@ -470,7 +522,8 @@
                                                 <img 
                                                     src={img} 
                                                     alt={`Femme CIFEPE ${idx + 1}`} 
-                                                    className="w-full h-28 sm:h-32 md:h-40 object-cover transition-transform duration-500 hover:scale-110"
+                                                    className={`w-full h-28 sm:h-32 md:h-40 object-cover transition-transform duration-500 hover:scale-110 zoom-animate`}
+                                                    style={{ animationDelay: positions[idx].zoomDelay }}
                                                 />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                                             </motion.div>
@@ -630,6 +683,15 @@
             useEffect(() => { scrollToTop(); }, [page, scrollToTop]);
             useEffect(() => { if (isDark) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }, [isDark]);
             
+            // Forcer le reflow après le chargement pour éviter les problèmes de layout
+            useEffect(() => {
+                window.dispatchEvent(new Event('resize'));
+                setTimeout(() => {
+                    window.scrollBy(0, 1);
+                    window.scrollBy(0, -1);
+                }, 10);
+            }, []);
+            
             const addToast = (msg, type) => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
             const renderPage = () => { 
                 switch(page) { 
@@ -646,16 +708,14 @@
             const navItems = [{ label: 'Accueil', id: 'home' },{ label: 'E-books', id: 'ebooks' },{ label: 'Galerie', id: 'gallery' },{ label: 'Prières', id: 'prayers' },{ label: 'Don', id: 'donate' }];
             const handleNav = (id) => { setPage(id); setMobileMenuOpen(false); scrollToTop(); };
             
-            // Footer component with logo, links and copyright
             const Footer = () => (
                 <footer className="bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800 pt-12 pb-6">
                     <div className="max-w-7xl mx-auto px-4">
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
-                            {/* Logo and description */}
                             <div className="col-span-1 md:col-span-1">
                                 <div className="flex items-center gap-3 mb-4">
                                     <div className="logo-container">
-                                        <img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" />
+                                        <img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" width="150" />
                                     </div>
                                     <span className="font-bold text-xl text-gray-800 dark:text-white">CIFEPE</span>
                                 </div>
@@ -663,8 +723,6 @@
                                     Communauté Internationale des Femmes de Plein Évangile - Transformons des vies par la foi et l'action.
                                 </p>
                             </div>
-                            
-                            {/* Quick links */}
                             <div>
                                 <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Liens rapides</h3>
                                 <ul className="space-y-2">
@@ -677,40 +735,19 @@
                                     ))}
                                 </ul>
                             </div>
-                            
-                            {/* Contact */}
                             <div>
                                 <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Contact</h3>
                                 <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <li className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
-                                        contact@cifepe.org
-                                    </li>
-                                    <li className="flex items-center gap-2">
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-                                        Lubumbashi, RDC
-                                    </li>
+                                    <li className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> contact@cifepe.org</li>
+                                    <li className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Lubumbashi, RDC</li>
                                 </ul>
                             </div>
-                            
-                            {/* Social */}
                             <div>
                                 <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Suivez-nous</h3>
-                                <div className="flex gap-3">
-                                    <SocialLink platform="X" href="#" />
-                                    <SocialLink platform="Facebook" href="#" />
-                                    <SocialLink platform="YouTube" href="#" />
-                                    <SocialLink platform="Instagram" href="#" />
-                                </div>
+                                <div className="flex gap-3"><SocialLink platform="X" href="#" /><SocialLink platform="Facebook" href="#" /><SocialLink platform="YouTube" href="#" /><SocialLink platform="Instagram" href="#" /></div>
                             </div>
                         </div>
-                        
-                        {/* Copyright */}
-                        <div className="border-t border-gray-200 dark:border-gray-800 pt-6 text-center">
-                            <p className="text-gray-400 dark:text-gray-500 text-sm">
-                                Copyright © 2026 CIFEPE. Tous droits réservés.
-                            </p>
-                        </div>
+                        <div className="border-t border-gray-200 dark:border-gray-800 pt-6 text-center"><p className="text-gray-400 dark:text-gray-500 text-sm">Copyright © 2026 CIFEPE. Tous droits réservés.</p></div>
                     </div>
                 </footer>
             );
@@ -721,9 +758,7 @@
                         <div className="max-w-7xl mx-auto px-4">
                             <div className="flex justify-between items-center h-14">
                                 <div className="flex items-center gap-2 cursor-pointer" onClick={()=>handleNav('home')}>
-                                    <div className="logo-container">
-                                        <img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" />
-                                    </div>
+                                    <div className="logo-container"><img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" width="150" /></div>
                                     <span className="font-bold text-base">CIFEPE</span>
                                 </div>
                                 <div className="hidden md:flex items-center gap-4">
