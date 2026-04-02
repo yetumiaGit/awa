@@ -146,6 +146,74 @@
                 max-height: 650px;
             }
         }
+        
+        /* Style pour les images Flickr responsives */
+        .flickr-image {
+            width: 100%;
+            height: auto;
+            object-fit: cover;
+            border-radius: 1rem;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .flickr-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 20px 25px -12px rgba(0,0,0,0.2);
+        }
+        .logo-container img {
+            max-height: 45px;
+            width: auto;
+            border-radius: 10px;
+        }
+        @media (max-width: 768px) {
+            .logo-container img {
+                max-height: 38px;
+            }
+        }
+        
+        /* Hero overlay personnalisé pour la nouvelle bannière */
+        .hero-overlay {
+            background: linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.5) 100%);
+        }
+        
+        /* Styles pour la galerie dynamique des femmes */
+        .floating-image {
+            transition: all 0.4s cubic-bezier(0.2, 0.9, 0.4, 1.1);
+        }
+        .image-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .image-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 35px -12px rgba(0,0,0,0.25);
+        }
+        /* Animation au scroll personnalisée via JS */
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .scroll-reveal-left {
+            opacity: 0;
+            transform: translateX(-30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .scroll-reveal-left.revealed {
+            opacity: 1;
+            transform: translateX(0);
+        }
+        .scroll-reveal-right {
+            opacity: 0;
+            transform: translateX(30px);
+            transition: opacity 0.7s ease, transform 0.7s ease;
+        }
+        .scroll-reveal-right.revealed {
+            opacity: 1;
+            transform: translateX(0);
+        }
     </style>
 </head>
 <body class="bg-gray-50 text-gray-800 dark:bg-dark dark:text-gray-100 transition-colors duration-300 antialiased">
@@ -237,9 +305,24 @@
                 { id: 6, image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600&h=450&fit=crop", city: "Abidjan", date: "Octobre 2024", description: "Session de prière et d'intercession" }
             ],
             youtubeVideos: [
-                { id: "dQw4w9WgXcQ", title: "Célébration CIFEPE - Unité et Foi", city: "Lubumbashi" },
-                { id: "JfKfPfyJRdk", title: "Action Humanitaire à Lubumbashi", city: "Lubumbashi" },
-                { id: "L_jWHffIx5E", title: "Témoignages de Femmes Transformées", city: "Kinshasa" }
+                { id: "GDgg4WyF4Ts", title: "La mère de Barbara Kanam raconte la naissance du CIFEPE", description: "À travers son témoignage, elle revient sur son expérience personnelle, les défis rencontrés et les motivations qui l’ont poussée à fonder le CIFEPE.", city: "Kinshasa" },
+                { id: "yiDMi_x7-jc", title: "Clotilde Kalassa : Vision et Engagement pour le Ministère des Femmes", description: "Dans cette interview exclusive accordée à SD Magistral TV, la Fondatrice de CIFEPE Clotilde Kalassa partage sa vision pour un ministère dédié aux femmes, mettant en lumière les défis, les accomplissements et les projets d’avenir pour l’émancipation des femmes en République démocratique du Congo.", city: "Lubumbashi" },
+                { id: "EIPvXWtv1a8", title: "Clotilde Kalassa mène une campagne de sensibilisation auprès des femmes", description: "À travers ses actions, Maman Clotilde K. invite les femmes à s’engager activement en rejoignant le CIFEPE, afin de renforcer leur participation et leur impact au sein de la communauté.", city: "Kinshasa" }
+            ]
+        };
+
+        // URLs des images Flickr
+        const FLICKR_IMAGES = {
+            founder: "https://live.staticflickr.com/65535/55183705353_ecd5a34c4e_b.jpg",
+            logo: "https://live.staticflickr.com/65535/55183826143_81ea7a2b1f_b.jpg",
+            heroBg: "https://live.staticflickr.com/65535/55182865082_ee8207c50f_b.jpg",
+            // Nouvelles images pour la section "Rejoignez la force des femmes"
+            womenGrid: [
+                "https://live.staticflickr.com/65535/55184052269_9708a63f6d_b.jpg",
+                "https://live.staticflickr.com/65535/55182910822_a1fc008839_b.jpg",
+                "https://live.staticflickr.com/65535/55182910747_2bb1f6c6a9_b.jpg",
+                "https://live.staticflickr.com/65535/55183795301_a61c7e6251_b.jpg",
+                "https://live.staticflickr.com/65535/55182909987_168cb5ea04_b.jpg"
             ]
         };
 
@@ -263,6 +346,37 @@
             </div>
         );
 
+        // Composant de révélation au scroll
+        const ScrollReveal = ({ children, direction = 'up', delay = 0 }) => {
+            const [isRevealed, setIsRevealed] = useState(false);
+            const ref = useRef(null);
+            
+            useEffect(() => {
+                const observer = new IntersectionObserver(
+                    ([entry]) => {
+                        if (entry.isIntersecting) {
+                            setIsRevealed(true);
+                            observer.disconnect();
+                        }
+                    },
+                    { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+                );
+                if (ref.current) observer.observe(ref.current);
+                return () => observer.disconnect();
+            }, []);
+            
+            let className = '';
+            if (direction === 'up') className = 'scroll-reveal';
+            else if (direction === 'left') className = 'scroll-reveal-left';
+            else if (direction === 'right') className = 'scroll-reveal-right';
+            
+            return (
+                <div ref={ref} className={`${className} ${isRevealed ? 'revealed' : ''}`} style={{ transitionDelay: `${delay}ms` }}>
+                    {children}
+                </div>
+            );
+        };
+
         // --- PAGE GALERIE DÉTAILLÉE ---
         const GalleryDetailPage = ({ scrollToTop }) => {
             useEffect(() => { scrollToTop(); }, [scrollToTop]);
@@ -270,7 +384,7 @@
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="max-w-7xl mx-auto px-4 py-12 md:py-16">
                     <SectionTitle title="Notre Galerie d'Actions" subtitle="Découvrez les moments forts de la CIFEPE à travers le monde" />
                     <div className="mb-16"><h3 className="text-xl md:text-2xl font-bold mb-6 flex items-center gap-2"><Icon name="Image" size={28} /> Photos de nos rencontres</h3><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">{CONTENT.galleryItems.map((item) => (<Card key={item.id} hover className="overflow-hidden p-0"><div className="overflow-hidden"><img src={item.image} alt={item.description} className="w-full h-56 md:h-64 object-cover hover:scale-105 transition-transform duration-500" /></div><div className="p-4"><div className="flex flex-wrap items-center gap-2 text-xs md:text-sm text-primary mb-2"><Icon name="MapPin" size={14} /> <span>{item.city}</span><span className="text-gray-400">•</span><Icon name="Clock" size={14} /> <span>{item.date}</span></div><p className="font-medium text-gray-800 dark:text-gray-200 text-sm md:text-base">{item.description}</p></div></Card>))}</div></div>
-                    <div><h3 className="text-xl md:text-2xl font-bold mb-6 flex items-center gap-2"><Icon name="Video" size={28} /> Vidéos de nos actions</h3><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">{CONTENT.youtubeVideos.map((video, idx) => (<Card key={idx} hover className="p-3"><div className="relative pb-[56.25%] mb-3 rounded-lg overflow-hidden"><iframe className="absolute top-0 left-0 w-full h-full" src={`https://www.youtube.com/embed/${video.id}`} title={video.title} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div><div className="flex items-center gap-2 text-xs md:text-sm text-primary mb-1"><Icon name="MapPin" size={14} /> <span>{video.city}</span></div><p className="font-medium text-center text-sm md:text-base">{video.title}</p></Card>))}</div></div>
+                    <div><h3 className="text-xl md:text-2xl font-bold mb-6 flex items-center gap-2"><Icon name="Video" size={28} /> Vidéos de nos actions</h3><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 md:gap-6">{CONTENT.youtubeVideos.map((video, idx) => (<Card key={idx} hover className="p-3 flex flex-col"><div className="relative pb-[56.25%] mb-3 rounded-lg overflow-hidden"><iframe className="absolute top-0 left-0 w-full h-full" src={`https://www.youtube.com/embed/${video.id}`} title={video.title} frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowFullScreen></iframe></div><div className="flex items-center gap-2 text-xs md:text-sm text-primary mb-2"><Icon name="MapPin" size={14} /> <span>{video.city}</span></div><h4 className="font-bold text-md md:text-lg mb-2 line-clamp-2">{video.title}</h4><p className="text-gray-600 dark:text-gray-300 text-xs md:text-sm leading-relaxed mb-3 line-clamp-3">{video.description}</p></Card>))}</div></div>
                 </motion.div>
             );
         };
@@ -284,40 +398,78 @@
                 <section className="py-12 md:py-16 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent dark:from-primary/10 dark:via-secondary/10">
                     <div className="max-w-6xl mx-auto px-4">
                         <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
-                            <div className="order-2 md:order-1"><img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=500&fit=crop" alt="Kalassa Yasso" className="rounded-2xl shadow-2xl w-full object-cover h-80 md:h-96 object-top border-4 border-white dark:border-gray-700" /></div>
-                            <div className="order-1 md:order-2"><div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs md:text-sm font-semibold mb-4">✨ Notre Fondatrice</div><h2 className="text-2xl md:text-4xl font-bold mb-4">Kalassa Yasso</h2><p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm md:text-base mb-4">{expanded ? fullBio : shortBio}</p><button onClick={() => setExpanded(!expanded)} className="text-primary font-semibold hover:underline flex items-center gap-1 text-sm mb-5">{expanded ? "Lire moins" : "Lire plus"} <Icon name="ArrowRight" size={16} /></button><Button onClick={() => window.location.href = "mailto:contact@cifepe.org"} icon="Send" className="!py-2 !px-5 text-sm">Contacter Kalassa Yasso</Button></div>
+                            <div className="order-2 md:order-1">
+                                <a href="https://www.flickr.com/photos/203718138@N04/55183705353/in/dateposted-public/" target="_blank" rel="noopener noreferrer" className="block rounded-2xl shadow-2xl overflow-hidden border-4 border-white dark:border-gray-700 transition-transform duration-300 hover:scale-[1.02]">
+                                    <img src={FLICKR_IMAGES.founder} alt="Clotilde Kalassa - Fondatrice CIFEPE" className="w-full object-cover h-80 md:h-96 object-top" />
+                                </a>
+                            </div>
+                            <div className="order-1 md:order-2">
+                                <div className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-xs md:text-sm font-semibold mb-4">✨ Notre Fondatrice</div>
+                                <h2 className="text-2xl md:text-4xl font-bold mb-4">Clotilde Kalassa Yasso</h2>
+                                <p className="text-gray-600 dark:text-gray-300 leading-relaxed text-sm md:text-base mb-4">{expanded ? fullBio : shortBio}</p>
+                                <button onClick={() => setExpanded(!expanded)} className="text-primary font-semibold hover:underline flex items-center gap-1 text-sm mb-5">{expanded ? "Lire moins" : "Lire plus"} <Icon name="ArrowRight" size={16} /></button>
+                                <Button onClick={() => window.location.href = "mailto:contact@cifepe.org"} icon="Send" className="!py-2 !px-5 text-sm">Contacter la Fondatrice</Button>
+                            </div>
                         </div>
                     </div>
                 </section>
             );
         };
 
-        // --- SECTION REJOINDRE LA FORCE DES FEMMES ---
-        const JoinForceSection = ({ setPage, scrollToTop }) => (
-            <section className="py-12 md:py-16 relative overflow-hidden bg-gradient-to-r from-primary/90 via-secondary/80 to-primary/90 text-white">
-                <div className="absolute inset-0 bg-black/20 z-0"></div>
-                <div className="absolute inset-0 z-0 opacity-20">
-                    <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=2000&auto=format" className="w-full h-full object-cover" alt="women community" />
-                </div>
-                <div className="max-w-7xl mx-auto px-4 relative z-10">
-                    <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-                        <div className="order-2 md:order-1">
-                            <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 leading-tight">Rejoignez la Force des Femmes CIFEPE</h2>
-                            <p className="text-base md:text-lg mb-6 md:mb-8 text-white/90 max-w-lg">Une communauté dynamique de femmes unies par la foi, engagées à impacter nos vies autour de l'Évangile.</p>
-                            <Button onClick={() => { setPage('join'); scrollToTop(); }} variant="secondary" className="bg-white text-primary hover:bg-gray-100 shadow-xl" icon="UserPlus">Rejoindre maintenant</Button>
-                        </div>
-                        <div className="order-1 md:order-2">
-                            <div className="grid grid-cols-2 gap-2 md:gap-3">
-                                <img src="https://images.unsplash.com/photo-1531123897727-8f129e1688ce?w=300&h=300&fit=crop" className="rounded-2xl shadow-xl w-full h-28 md:h-40 object-cover" alt="Femme africaine rayonnante" />
-                                <img src="https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=300&h=300&fit=crop" className="rounded-2xl shadow-xl w-full h-28 md:h-40 object-cover mt-3 md:mt-6" alt="Femme diverse" />
-                                <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop" className="rounded-2xl shadow-xl w-full h-28 md:h-40 object-cover -mt-2 md:-mt-4" alt="Femme souriante" />
-                                <img src="https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?w=300&h=300&fit=crop" className="rounded-2xl shadow-xl w-full h-28 md:h-40 object-cover" alt="Communion de femmes" />
+        // --- SECTION REJOINDRE LA FORCE DES FEMMES (NOUVELLE VERSION AVEC IMAGES FLICKR ET ANIMATIONS) ---
+        const JoinForceSection = ({ setPage, scrollToTop }) => {
+            // Positions et délais pour chaque image (effet de décalage dynamique)
+            const images = FLICKR_IMAGES.womenGrid;
+            const positions = [
+                { className: "col-span-1 row-span-1 translate-y-0", delay: 0, rotate: "-2deg", zIndex: 10 },
+                { className: "col-span-1 row-span-1 -translate-y-3 md:-translate-y-4", delay: 100, rotate: "1deg", zIndex: 20 },
+                { className: "col-span-1 row-span-1 translate-y-2 md:translate-y-3", delay: 200, rotate: "-1deg", zIndex: 15 },
+                { className: "col-span-1 row-span-1 -translate-y-1 md:-translate-y-2", delay: 150, rotate: "2deg", zIndex: 25 },
+                { className: "col-span-1 row-span-1 translate-y-4 md:translate-y-5", delay: 250, rotate: "0deg", zIndex: 5 }
+            ];
+            
+            return (
+                <section className="py-12 md:py-16 relative overflow-hidden bg-gradient-to-r from-primary/90 via-secondary/80 to-primary/90 text-white">
+                    <div className="absolute inset-0 bg-black/20 z-0"></div>
+                    <div className="max-w-7xl mx-auto px-4 relative z-10">
+                        <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+                            <div className="order-2 md:order-1">
+                                <ScrollReveal direction="left" delay={100}>
+                                    <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-4 leading-tight">Rejoignez la Force des Femmes CIFEPE</h2>
+                                    <p className="text-base md:text-lg mb-6 md:mb-8 text-white/90 max-w-lg">Une communauté dynamique de femmes unies par la foi, engagées à impacter nos vies autour de l'Évangile.</p>
+                                    <Button onClick={() => { setPage('join'); scrollToTop(); }} variant="secondary" className="bg-white text-primary hover:bg-gray-100 shadow-xl" icon="UserPlus">Rejoindre maintenant</Button>
+                                </ScrollReveal>
+                            </div>
+                            <div className="order-1 md:order-2">
+                                <ScrollReveal direction="right" delay={200}>
+                                    <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 auto-rows-min">
+                                        {images.map((img, idx) => (
+                                            <motion.div
+                                                key={idx}
+                                                initial={{ opacity: 0, y: 30, rotate: 0 }}
+                                                whileInView={{ opacity: 1, y: 0, rotate: positions[idx].rotate }}
+                                                viewport={{ once: true, margin: "-50px" }}
+                                                transition={{ duration: 0.6, delay: idx * 0.1, type: "spring", stiffness: 100 }}
+                                                whileHover={{ scale: 1.05, zIndex: 50, rotate: 0 }}
+                                                className={`relative overflow-hidden rounded-2xl shadow-xl image-card ${positions[idx].className}`}
+                                                style={{ zIndex: positions[idx].zIndex, transform: `rotate(${positions[idx].rotate})` }}
+                                            >
+                                                <img 
+                                                    src={img} 
+                                                    alt={`Femme CIFEPE ${idx + 1}`} 
+                                                    className="w-full h-28 sm:h-32 md:h-40 object-cover transition-transform duration-500 hover:scale-110"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
+                                            </motion.div>
+                                        ))}
+                                    </div>
+                                </ScrollReveal>
                             </div>
                         </div>
                     </div>
-                </div>
-            </section>
-        );
+                </section>
+            );
+        };
 
         // --- SECTION VALEURS ---
         const ValuesSection = () => (
@@ -326,13 +478,15 @@
                     <SectionTitle title="Nos Valeurs Fondamentales" subtitle="Les principes qui guident notre communauté" />
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
                         {CONTENT.about.values.map((value, i) => (
-                            <Card key={i} hover className="text-center group">
-                                <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center group-hover:scale-110 transition">
-                                    <Icon name={value.icon} size={28} className="text-primary" />
-                                </div>
-                                <h3 className="font-bold text-lg">{value.title}</h3>
-                                <p className="text-gray-500 text-sm mt-1">{value.desc}</p>
-                            </Card>
+                            <ScrollReveal key={i} direction="up" delay={i * 100}>
+                                <Card hover className="text-center group">
+                                    <div className="w-14 h-14 mx-auto mb-4 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center group-hover:scale-110 transition">
+                                        <Icon name={value.icon} size={28} className="text-primary" />
+                                    </div>
+                                    <h3 className="font-bold text-lg">{value.title}</h3>
+                                    <p className="text-gray-500 text-sm mt-1">{value.desc}</p>
+                                </Card>
+                            </ScrollReveal>
                         ))}
                     </div>
                 </div>
@@ -344,37 +498,39 @@
             <section className="py-12 bg-gray-50 dark:bg-gray-900">
                 <div className="max-w-7xl mx-auto px-4">
                     <div className="grid md:grid-cols-2 gap-8 items-center">
-                        <div>
-                            <SectionTitle title={CONTENT.projects.title} subtitle={CONTENT.projects.location} align="left" />
-                            <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{CONTENT.projects.desc}</p>
-                            <div className="grid grid-cols-2 gap-3">
-                                {CONTENT.projects.features.map((feature, i) => (
-                                    <div key={i} className="flex items-center gap-2 text-sm">
-                                        <Icon name="ShieldCheck" size={16} className="text-primary" />
-                                        <span>{feature}</span>
-                                    </div>
-                                ))}
+                        <ScrollReveal direction="left">
+                            <div>
+                                <SectionTitle title={CONTENT.projects.title} subtitle={CONTENT.projects.location} align="left" />
+                                <p className="text-gray-600 dark:text-gray-300 mb-6 leading-relaxed">{CONTENT.projects.desc}</p>
+                                <div className="grid grid-cols-2 gap-3">
+                                    {CONTENT.projects.features.map((feature, i) => (
+                                        <div key={i} className="flex items-center gap-2 text-sm">
+                                            <Icon name="ShieldCheck" size={16} className="text-primary" />
+                                            <span>{feature}</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
-                        <div className="relative">
-                            <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop" alt="Centre Communautaire" className="rounded-2xl shadow-xl w-full h-64 object-cover" />
-                            <div className="absolute -bottom-4 -right-4 bg-primary text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">5 Hectares</div>
-                        </div>
+                        </ScrollReveal>
+                        <ScrollReveal direction="right">
+                            <div className="relative">
+                                <img src="https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&h=400&fit=crop" alt="Centre Communautaire" className="rounded-2xl shadow-xl w-full h-64 object-cover" />
+                                <div className="absolute -bottom-4 -right-4 bg-primary text-white px-4 py-2 rounded-full text-sm font-bold shadow-lg">5 Hectares</div>
+                            </div>
+                        </ScrollReveal>
                     </div>
                 </div>
             </section>
         );
 
-        // --- CHAT MODAL CENTRÉ ---
+        // --- CHAT MODAL --- (inchangé)
         const ChatModal = ({ isOpen, onClose }) => {
             const [messages, setMessages] = useState([{ text: "Bonjour ! Je suis l'assistante virtuelle de la CIFEPE. Comment puis-je vous aider ?", from: 'bot' }]);
             const [input, setInput] = useState("");
             const messagesEndRef = useRef(null);
             
             useEffect(() => {
-                if (messagesEndRef.current) {
-                    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-                }
+                if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
             }, [messages]);
             
             const sendMessage = () => {
@@ -390,47 +546,17 @@
             
             return (
                 <div className="chat-modal-overlay" onClick={onClose}>
-                    <motion.div 
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.9 }}
-                        transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                        className="chat-modal-content"
-                        onClick={(e) => e.stopPropagation()}
-                    >
+                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="chat-modal-content" onClick={(e) => e.stopPropagation()}>
                         <div className="bg-gradient-to-r from-primary to-secondary p-4 text-white flex justify-between items-center">
-                            <div className="flex items-center gap-3">
-                                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
-                                    <Icon name="MessageCircle" size={22} />
-                                </div>
-                                <div>
-                                    <h3 className="font-bold text-lg">Assistante CIFEPE</h3>
-                                    <p className="text-xs text-white/80">En ligne • Réponse rapide</p>
-                                </div>
-                            </div>
-                            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center">
-                                <Icon name="X" size={18} />
-                            </button>
+                            <div className="flex items-center gap-3"><div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="MessageCircle" size={22} /></div><div><h3 className="font-bold text-lg">Assistante CIFEPE</h3><p className="text-xs text-white/80">En ligne • Réponse rapide</p></div></div>
+                            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center"><Icon name="X" size={18} /></button>
                         </div>
                         <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-800/50">
-                            {messages.map((msg, idx) => (
-                                <div key={idx} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
-                                    <div className={`max-w-[85%] p-3 rounded-2xl text-sm md:text-base leading-relaxed ${
-                                        msg.from === 'user' 
-                                            ? 'bg-gradient-to-r from-primary to-secondary text-white rounded-br-none' 
-                                            : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none shadow-sm'
-                                    }`}>
-                                        {msg.text}
-                                    </div>
-                                </div>
-                            ))}
+                            {messages.map((msg, idx) => (<div key={idx} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[85%] p-3 rounded-2xl text-sm md:text-base leading-relaxed ${msg.from === 'user' ? 'bg-gradient-to-r from-primary to-secondary text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none shadow-sm'}`}>{msg.text}</div></div>))}
                             <div ref={messagesEndRef} />
                         </div>
                         <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
-                            <div className="flex gap-2">
-                                <input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && sendMessage()} placeholder="Écrivez votre message..." className="flex-1 px-4 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white text-base focus:outline-none focus:border-primary transition" />
-                                <button onClick={sendMessage} className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-secondary text-white flex items-center justify-center hover:scale-105 transition shadow-md"><Icon name="Send" size={20} /></button>
-                            </div>
+                            <div className="flex gap-2"><input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && sendMessage()} placeholder="Écrivez votre message..." className="flex-1 px-4 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white text-base focus:outline-none focus:border-primary transition" /><button onClick={sendMessage} className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-secondary text-white flex items-center justify-center hover:scale-105 transition shadow-md"><Icon name="Send" size={20} /></button></div>
                             <p className="text-xs text-gray-400 text-center mt-3">Notre équipe vous répond dans les meilleurs délais</p>
                         </div>
                     </motion.div>
@@ -438,94 +564,45 @@
             );
         };
 
-        // --- HOMEPAGE COMPLÈTE ---
-        const HomePage = ({ setPage, scrollToTop }) => (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
-                {/* Hero Section */}
-                <section className="relative min-h-[85vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden">
-                    <div className="absolute inset-0 z-0"><img src="https://images.unsplash.com/photo-1573164713988-8665fc963095?q=80&w=2000&auto=format&fit=crop" className="w-full h-full object-cover brightness-[0.45]" alt="Femmes CIFEPE" /></div>
-                    <div className="relative z-10 text-center px-5 max-w-5xl mx-auto">
-                        <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
-                            <span className="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium mb-4">✨ Communauté Internationale des Femmes de Plein Évangile</span>
-                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">{CONTENT.hero.title}</h1>
-                            <p className="text-base md:text-lg text-gray-200 mb-8 max-w-2xl mx-auto">{CONTENT.hero.subtitle}</p>
-                            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
-                                <Button onClick={() => { setPage('join'); scrollToTop(); }} icon="UserPlus">{CONTENT.hero.cta1}</Button>
-                                <Button variant="outline" onClick={() => { setPage('donate'); scrollToTop(); }} icon="Heart">{CONTENT.hero.cta2}</Button>
-                            </div>
-                        </motion.div>
+        // --- PAGE DON ---
+        const DonatePage = ({ addToast, scrollToTop }) => { 
+            const [amount,setAmount]=useState(50); 
+            useEffect(() => { scrollToTop(); }, [scrollToTop]); 
+            return (
+                <motion.div className="max-w-3xl mx-auto px-4 py-12 text-center">
+                    <SectionTitle title="Soutenez l'Œuvre" />
+                    <div className="bg-primary/5 dark:bg-primary/10 rounded-2xl p-5 mb-8 text-left">
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">Chez CIFEPE, chaque don que vous faites est un geste d'espoir. Nous utilisons vos contributions avec transparence pour soutenir les veuves, les orphelins, et permettre l’accès à l’éducation pour tous. Chaque euro compte, et grâce à vous, nous changeons des vies. Merci infiniment de votre générosité.</p>
                     </div>
-                </section>
-                
-                {/* Qui sommes-nous */}
-                <section className="py-12 md:py-16 bg-white dark:bg-dark">
-                    <div className="max-w-7xl mx-auto px-4">
-                        <div className="grid md:grid-cols-2 gap-8 items-start">
-                            <div>
-                                <SectionTitle title="Qui sommes-nous ?" align="left" />
-                                <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed text-base md:text-lg">La CIFEPE est une communauté chrétienne engagée dans la transformation spirituelle, sociale et économique des femmes.</p>
-                                <div className="space-y-6">
-                                    <div className="flex gap-4">
-                                        <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0"><Icon name="Target" size={26} /></div>
-                                        <div><h3 className="font-bold text-lg md:text-xl mb-2">Notre Mission</h3><p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">{CONTENT.about.mission}</p></div>
-                                    </div>
-                                    <div className="flex gap-4">
-                                        <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary shrink-0"><Icon name="Eye" size={26} /></div>
-                                        <div><h3 className="font-bold text-lg md:text-xl mb-2">Notre Vision</h3><p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">{CONTENT.about.vision}</p></div>
-                                    </div>
-                                </div>
-                            </div>
-                            <Card className="bg-gray-50 dark:bg-gray-800/60 p-6">
-                                <div className="flex items-center gap-3 mb-4"><Icon name="History" size={28} /><h3 className="text-xl font-bold">Notre Histoire</h3></div>
-                                <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">{CONTENT.about.history}</p>
-                            </Card>
-                        </div>
-                    </div>
-                </section>
-                
-                {/* Domaines d'action */}
-                <section className="py-12 bg-gray-50 dark:bg-gray-900">
-                    <div className="max-w-7xl mx-auto px-4"><SectionTitle title="Nos Domaines d'Action" /><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{CONTENT.actions.map((action,i)=><Card key={i} hover className="text-center p-4"><div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><Icon name={action.icon} size={24} className="text-primary" /></div><h3 className="font-bold text-base">{action.title}</h3><p className="text-gray-500 text-xs mt-1">{action.desc}</p></Card>)}</div></div>
-                </section>
-                
-                {/* Valeurs */}
-                <ValuesSection />
-                
-                {/* Projet Centre Communautaire */}
-                <ProjectSection />
-                
-                {/* Rejoindre la Force */}
-                <JoinForceSection setPage={setPage} scrollToTop={scrollToTop} />
-                
-                {/* Fondatrice */}
-                <FounderPreview />
-                
-                {/* Galerie aperçu */}
-                <section className="py-12 bg-white dark:bg-dark">
-                    <div className="max-w-7xl mx-auto px-4">
-                        <SectionTitle title="Nos Actions en Images" subtitle="Un aperçu de nos moments de partage et de transformation" />
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 mb-8">
-                            {CONTENT.galleryItems.slice(0, 3).map((item) => (
-                                <div key={item.id} className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
-                                    <img src={item.image} alt={item.description} className="w-full h-48 md:h-56 object-cover hover:scale-105 transition-transform duration-500" />
-                                    <div className="p-3 bg-gray-50 dark:bg-gray-800"><p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{item.description}</p><div className="flex items-center gap-2 text-xs text-primary mt-1"><Icon name="MapPin" size={12} /> {item.city} • {item.date}</div></div>
-                                </div>
-                            ))}
-                        </div>
-                        <div className="text-center"><Button onClick={() => { setPage('gallery'); scrollToTop(); }} icon="Image" variant="secondary">Voir toute la galerie</Button></div>
-                    </div>
-                </section>
-            </motion.div>
-        );
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-6">{[10,50,100,200].map(v=><button key={v} onClick={()=>setAmount(v)} className={`py-2 md:py-3 rounded-xl font-bold border-2 transition text-sm ${amount===v?'border-primary bg-primary text-white':'border-gray-200 dark:border-gray-700'}`}>{v}€</button>)}</div>
+                    <Card><input type="number" placeholder="Autre montant" className="w-full text-xl md:text-2xl font-bold border-b-2 py-2 mb-4 dark:bg-transparent dark:border-gray-600 text-center" onChange={(e)=>setAmount(e.target.value)} /><Button onClick={()=>addToast(`Merci pour votre don de ${amount}€ !`,"success")} className="w-full">Faire un don</Button></Card>
+                </motion.div>
+            ); 
+        };
 
-        // --- AUTRES PAGES ---
+        // --- AUTRES PAGES (Ebooks, Prières, Join) ---
         const EbookPage = ({ addToast, scrollToTop }) => { useEffect(() => { scrollToTop(); }, [scrollToTop]); return (<motion.div className="max-w-7xl mx-auto px-4 py-12"><SectionTitle title="Bibliothèque CIFEPE" subtitle="Livres électroniques gratuits sur les Évangiles et la vie communautaire." /><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mt-8">{CONTENT.ebooks.map((book, idx) => (<Card key={idx} hover className="flex flex-col h-full"><div className="rounded-xl overflow-hidden mb-4 shadow-md book-cover"><img src={book.cover} alt={book.title} className="w-full h-48 md:h-56 object-cover" /></div><h3 className="text-lg md:text-xl font-bold mb-2">{book.title}</h3><p className="text-gray-500 text-xs md:text-sm mb-5 flex-grow">{book.desc}</p><Button variant="secondary" className="w-full py-2 text-xs md:text-sm" icon="Download" onClick={() => addToast(`📖 "${book.title}" téléchargement simulé`, "success")}>Télécharger gratuit</Button></Card>))}</div></motion.div>); };
         
         const PrayersPage = ({ addToast, scrollToTop }) => { useEffect(() => { scrollToTop(); }, [scrollToTop]); return (<motion.div className="max-w-4xl mx-auto px-4 py-12"><SectionTitle title="Temps de Prière" subtitle="Sessions en ligne, 4 fois par semaine." /><div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-12">{['Lundi 19h', 'Mercredi 19h', 'Vendredi 20h', 'Dimanche 09h'].map((time,i)=><Card key={i} className="flex items-center gap-3 md:gap-4 p-4 md:p-5"><Icon name="Clock" className="text-primary" size={24} /><div><h3 className="font-bold text-sm md:text-base">{time}</h3><p className="text-xs text-gray-500">Enseignement & Intercession</p><button className="text-primary text-xs md:text-sm font-medium mt-1">Rejoindre</button></div></Card>)}</div><Card><div><h3 className="text-xl md:text-2xl font-bold mb-2">Besoin de prière ?</h3><form onSubmit={(e)=>{e.preventDefault();addToast("Demande envoyée, nous prions pour vous.","success");}} className="space-y-4"><input placeholder="Nom" className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" /><textarea rows="2" placeholder="Sujet de prière" className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base"></textarea><Button type="submit">Envoyer</Button></form></div></Card></motion.div>); };
         
-        const DonatePage = ({ addToast, scrollToTop }) => { const [amount,setAmount]=useState(50); useEffect(() => { scrollToTop(); }, [scrollToTop]); return (<motion.div className="max-w-3xl mx-auto px-4 py-12 text-center"><SectionTitle title="Soutenez l'Œuvre" /><div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-6">{[10,50,100,200].map(v=><button key={v} onClick={()=>setAmount(v)} className={`py-2 md:py-3 rounded-xl font-bold border-2 transition text-sm ${amount===v?'border-primary bg-primary text-white':'border-gray-200 dark:border-gray-700'}`}>{v}€</button>)}</div><Card><input type="number" placeholder="Autre montant" className="w-full text-xl md:text-2xl font-bold border-b-2 py-2 mb-4 dark:bg-transparent dark:border-gray-600 text-center" onChange={(e)=>setAmount(e.target.value)} /><Button onClick={()=>addToast(`Merci pour votre don de ${amount}€ !`,"success")} className="w-full">Faire un don</Button></Card></motion.div>); };
-        
         const JoinPage = ({ addToast, setPage, scrollToTop }) => { useEffect(() => { scrollToTop(); }, [scrollToTop]); return (<motion.div className="max-w-2xl mx-auto px-4 py-12"><Card><h2 className="text-xl md:text-2xl font-bold text-center mb-4">Rejoignez la CIFEPE</h2><div className="bg-gray-50 dark:bg-gray-900/80 p-4 rounded-xl mb-6"><h3 className="font-bold mb-2 text-sm md:text-base">Conditions :</h3><ul className="space-y-1 text-xs md:text-sm">{CONTENT.joinCriteria.map((c,i)=><li key={i} className="flex gap-2"><span className="text-primary">✓</span>{c}</li>)}</ul></div><form onSubmit={(e)=>{e.preventDefault();addToast("Bienvenue dans la famille CIFEPE !","success");setPage('home');scrollToTop();}} className="space-y-3"><input placeholder="Prénom" required className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" /><input placeholder="Email" type="email" required className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" /><Button type="submit" className="w-full">Valider mon adhésion</Button></form></Card></motion.div>); };
+
+        // --- HOMEPAGE ---
+        const HomePage = ({ setPage, scrollToTop }) => (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                <section className="relative min-h-[85vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden">
+                    <div className="absolute inset-0 z-0"><img src={FLICKR_IMAGES.heroBg} className="w-full h-full object-cover object-center" alt="Bannière CIFEPE" /><div className="absolute inset-0 hero-overlay"></div></div>
+                    <div className="relative z-10 text-center px-5 max-w-5xl mx-auto"><motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}><span className="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium mb-4">✨ Communauté Internationale des Femmes de Plein Évangile</span><h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">{CONTENT.hero.title}</h1><p className="text-base md:text-lg text-gray-200 mb-8 max-w-2xl mx-auto">{CONTENT.hero.subtitle}</p><div className="flex flex-col sm:flex-row gap-3 justify-center items-center"><Button onClick={() => { setPage('join'); scrollToTop(); }} icon="UserPlus">{CONTENT.hero.cta1}</Button><Button variant="outline" onClick={() => { setPage('donate'); scrollToTop(); }} icon="Heart">{CONTENT.hero.cta2}</Button></div></motion.div></div>
+                </section>
+                <section className="py-12 md:py-16 bg-white dark:bg-dark"><div className="max-w-7xl mx-auto px-4"><div className="grid md:grid-cols-2 gap-8 items-start"><ScrollReveal direction="left"><div><SectionTitle title="Qui sommes-nous ?" align="left" /><p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed text-base md:text-lg">La CIFEPE est une communauté chrétienne engagée dans la transformation spirituelle, sociale et économique des femmes.</p><div className="space-y-6"><div className="flex gap-4"><div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0"><Icon name="Target" size={26} /></div><div><h3 className="font-bold text-lg md:text-xl mb-2">Notre Mission</h3><p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">{CONTENT.about.mission}</p></div></div><div className="flex gap-4"><div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary shrink-0"><Icon name="Eye" size={26} /></div><div><h3 className="font-bold text-lg md:text-xl mb-2">Notre Vision</h3><p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">{CONTENT.about.vision}</p></div></div></div></div></ScrollReveal><ScrollReveal direction="right"><Card className="bg-gray-50 dark:bg-gray-800/60 p-6"><div className="flex items-center gap-3 mb-4"><Icon name="History" size={28} /><h3 className="text-xl font-bold">Notre Histoire</h3></div><p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">{CONTENT.about.history}</p></Card></ScrollReveal></div></div></section>
+                <section className="py-12 bg-gray-50 dark:bg-gray-900"><div className="max-w-7xl mx-auto px-4"><SectionTitle title="Nos Domaines d'Action" /><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{CONTENT.actions.map((action,i)=><ScrollReveal key={i} direction="up" delay={i*50}><Card hover className="text-center p-4"><div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><Icon name={action.icon} size={24} className="text-primary" /></div><h3 className="font-bold text-base">{action.title}</h3><p className="text-gray-500 text-xs mt-1">{action.desc}</p></Card></ScrollReveal>)}</div></div></section>
+                <ValuesSection />
+                <ProjectSection />
+                <JoinForceSection setPage={setPage} scrollToTop={scrollToTop} />
+                <FounderPreview />
+                <section className="py-12 bg-white dark:bg-dark"><div className="max-w-7xl mx-auto px-4"><SectionTitle title="Nos Actions en Images" subtitle="Un aperçu de nos moments de partage et de transformation" /><div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 mb-8">{CONTENT.galleryItems.slice(0, 3).map((item, idx) => (<ScrollReveal key={item.id} direction="up" delay={idx*100}><div className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"><img src={item.image} alt={item.description} className="w-full h-48 md:h-56 object-cover hover:scale-105 transition-transform duration-500" /><div className="p-3 bg-gray-50 dark:bg-gray-800"><p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{item.description}</p><div className="flex items-center gap-2 text-xs text-primary mt-1"><Icon name="MapPin" size={12} /> {item.city} • {item.date}</div></div></div></ScrollReveal>))}</div><div className="text-center"><Button onClick={() => { setPage('gallery'); scrollToTop(); }} icon="Image" variant="secondary">Voir toute la galerie</Button></div></div></section>
+            </motion.div>
+        );
 
         // --- MAIN APP ---
         const App = () => {
@@ -562,7 +639,7 @@
                         <div className="max-w-7xl mx-auto px-4">
                             <div className="flex justify-between items-center h-14">
                                 <div className="flex items-center gap-2 cursor-pointer" onClick={()=>handleNav('home')}>
-                                    <div className="w-7 h-7 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center text-white"><Icon name="Flame"/></div>
+                                    <div className="logo-container w-8 h-8 rounded-lg overflow-hidden bg-white/10 flex items-center justify-center"><img src={FLICKR_IMAGES.logo} alt="Logo CIFEPE" className="w-full h-full object-cover" /></div>
                                     <span className="font-bold text-base">CIFEPE</span>
                                 </div>
                                 <div className="hidden md:flex items-center gap-4">
@@ -572,28 +649,16 @@
                                 </div>
                                 <div className="flex md:hidden items-center gap-1">
                                     <button onClick={()=>setIsDark(!isDark)} className="p-2 rounded-full flex items-center justify-center"><Icon name={isDark?"Sun":"Moon"} size={18}/></button>
-                                    <button onClick={()=>setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-full flex items-center justify-center">
-                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={mobileMenuOpen?"M6 18L18 6M6 6l12 12":"M4 6h16M4 12h16M4 18h16"}/></svg>
-                                    </button>
+                                    <button onClick={()=>setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-full flex items-center justify-center"><svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={mobileMenuOpen?"M6 18L18 6M6 6l12 12":"M4 6h16M4 12h16M4 18h16"}/></svg></button>
                                 </div>
                             </div>
                             <AnimatePresence>{mobileMenuOpen && (<motion.div initial={{ opacity:0, height:0 }} animate={{ opacity:1, height:'auto' }} exit={{ opacity:0, height:0 }} className="md:hidden overflow-hidden border-t py-3 space-y-2">{navItems.map(item=><button key={item.id} onClick={()=>handleNav(item.id)} className={`block w-full text-left px-2 py-2 text-base ${page===item.id?'text-primary font-semibold':'text-gray-600 dark:text-gray-300'}`}>{item.label}</button>)}<Button variant="primary" className="w-full justify-center mt-1" onClick={()=>handleNav('join')}>Rejoindre</Button></motion.div>)}</AnimatePresence>
                         </div>
                     </nav>
-                    
                     <main className="flex-grow pt-14"><AnimatePresence mode="wait">{renderPage()}</AnimatePresence></main>
-                    
-                    <footer className="bg-white dark:bg-gray-900 border-t py-8">
-                        <div className="max-w-7xl mx-auto px-4 text-center">
-                            <div className="flex justify-center gap-3 mb-4"><SocialLink platform="X" href="#"/><SocialLink platform="Facebook" href="#"/><SocialLink platform="YouTube" href="#"/><SocialLink platform="Instagram" href="#"/></div>
-                            <p className="text-sm text-gray-500">contact@cifepe.org • Lubumbashi, RDC</p>
-                            <p className="text-xs text-gray-400 mt-3">© 2025 CIFEPE. Tous droits réservés.</p>
-                        </div>
-                    </footer>
-                    
+                    <footer className="bg-white dark:bg-gray-900 border-t py-8"><div className="max-w-7xl mx-auto px-4 text-center"><div className="flex justify-center gap-3 mb-4"><SocialLink platform="X" href="#"/><SocialLink platform="Facebook" href="#"/><SocialLink platform="YouTube" href="#"/><SocialLink platform="Instagram" href="#"/></div><p className="text-sm text-gray-500">contact@cifepe.org • Lubumbashi, RDC</p><p className="text-xs text-gray-400 mt-3">© 2025 CIFEPE. Tous droits réservés.</p></div></footer>
                     <button onClick={() => setIsChatOpen(true)} className="fixed bottom-5 right-5 z-50 w-14 h-14 bg-gradient-to-r from-primary to-secondary rounded-full shadow-lg flex items-center justify-center text-white hover:scale-110 transition-all duration-300"><Icon name="MessageCircle" size={26} /></button>
                     <ChatModal isOpen={isChatOpen} onClose={() => setIsChatOpen(false)} />
-                    
                     <AnimatePresence>{toast && (<motion.div initial={{ opacity:0,y:50}} animate={{ opacity:1,y:0}} exit={{ opacity:0,y:50}} className={`fixed bottom-24 right-4 px-4 py-2 rounded-xl shadow-lg flex items-center gap-2 z-50 text-sm ${toast.type==='success'?'bg-green-600 text-white':'bg-red-600'}`}><Icon name="CheckCircle"/><span>{toast.msg}</span></motion.div>)}</AnimatePresence>
                 </div>
             );
