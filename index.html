@@ -52,12 +52,6 @@
             -webkit-tap-highlight-color: transparent;
         }
         
-        /* Force le reflow/redraw immédiat pour éviter le décalage initial */
-        img, .grid, .flex, .container, section, div {
-            will-change: transform, opacity;
-        }
-        
-        /* Éviter les décalages de layout */
         img {
             aspect-ratio: attr(width) / attr(height);
             max-width: 100%;
@@ -111,7 +105,7 @@
         .book-cover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
         .book-cover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -12px rgba(0,0,0,0.2); }
         
-        /* Styles pour le chat modal centré */
+        /* Chat styles */
         .chat-modal-overlay {
             position: fixed;
             top: 0;
@@ -152,15 +146,35 @@
             }
         }
         
-        @media (min-width: 1024px) {
-            .chat-modal-content {
-                max-width: 550px;
-                height: 65vh;
-                max-height: 650px;
-            }
+        /* Animation de frappe */
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
+        }
+        .typing-indicator span {
+            animation: blink 1.2s infinite;
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #9ca3af;
+            margin: 0 2px;
+        }
+        .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+        .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+        
+        .message-bubble {
+            word-wrap: break-word;
+            white-space: pre-wrap;
         }
         
-        /* Style pour les images responsives */
+        .quick-reply-btn {
+            transition: all 0.2s ease;
+        }
+        .quick-reply-btn:hover {
+            transform: translateY(-2px);
+        }
+        
         .flickr-image {
             width: 100%;
             height: auto;
@@ -173,7 +187,6 @@
             box-shadow: 0 20px 25px -12px rgba(0,0,0,0.2);
         }
         
-        /* Logo container */
         .logo-container {
             display: flex;
             align-items: center;
@@ -191,12 +204,10 @@
             }
         }
         
-        /* Hero overlay */
         .hero-overlay {
             background: linear-gradient(135deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.5) 100%);
         }
         
-        /* Animations pour la galerie des femmes */
         .image-card {
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
@@ -232,7 +243,6 @@
             transform: translateX(0);
         }
         
-        /* Footer styles */
         .footer-link {
             transition: color 0.2s ease;
         }
@@ -243,39 +253,23 @@
             color: #a78bfa;
         }
         
-        /* Animation zoom in/out continue pour les images de la section "Rejoindre" */
-        @keyframes gentleZoom {
-            0% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.08);
-            }
-            100% {
-                transform: scale(1);
-            }
-        }
-        
         .zoom-animate {
             animation: gentleZoom 8s ease-in-out infinite;
         }
-        
-        /* Animation de balayage latéral subtile pour la photo de la fondatrice */
-        @keyframes subtleSway {
-            0% {
-                transform: translateX(-3%) scale(1.02);
-            }
-            50% {
-                transform: translateX(3%) scale(1.02);
-            }
-            100% {
-                transform: translateX(-3%) scale(1.02);
-            }
+        @keyframes gentleZoom {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+            100% { transform: scale(1); }
         }
         
         .founder-sway {
             animation: subtleSway 12s ease-in-out infinite;
             transform-origin: center center;
+        }
+        @keyframes subtleSway {
+            0% { transform: translateX(-3%) scale(1.02); }
+            50% { transform: translateX(3%) scale(1.02); }
+            100% { transform: translateX(-3%) scale(1.02); }
         }
     </style>
 </head>
@@ -320,7 +314,7 @@
             Prayer: () => <svg className="icon" viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>,
         };
 
-        // --- Social Icons ---
+        // Social Icons
         const SocialIcons = {
             X: () => <svg className="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>,
             Facebook: () => <svg className="social-icon" viewBox="0 0 24 24" fill="currentColor"><path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879v-6.99h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.99C18.343 21.128 22 16.991 22 12z"/></svg>,
@@ -368,13 +362,13 @@
                 { id: 6, image: "https://images.unsplash.com/photo-1528605248644-14dd04022da1?w=600&h=450&fit=crop", city: "Abidjan", date: "Octobre 2024", description: "Session de prière et d'intercession" }
             ],
             youtubeVideos: [
-                { id: "GDgg4WyF4Ts", title: "La mère de Barbara Kanam raconte la naissance du CIFEPE", description: "À travers son témoignage, elle revient sur son expérience personnelle, les défis rencontrés et les motivations qui l’ont poussée à fonder le CIFEPE.", city: "Kinshasa" },
-                { id: "yiDMi_x7-jc", title: "Clotilde Kalassa : Vision et Engagement pour le Ministère des Femmes", description: "Dans cette interview exclusive accordée à SD Magistral TV, la Fondatrice de CIFEPE Clotilde Kalassa partage sa vision pour un ministère dédié aux femmes, mettant en lumière les défis, les accomplissements et les projets d’avenir pour l’émancipation des femmes en République démocratique du Congo.", city: "Lubumbashi" },
-                { id: "EIPvXWtv1a8", title: "Clotilde Kalassa mène une campagne de sensibilisation auprès des femmes", description: "À travers ses actions, Maman Clotilde K. invite les femmes à s’engager activement en rejoignant le CIFEPE, afin de renforcer leur participation et leur impact au sein de la communauté.", city: "Kinshasa" }
+                { id: "GDgg4WyF4Ts", title: "La mère de Barbara Kanam raconte la naissance du CIFEPE", description: "À travers son témoignage, elle revient sur son expérience personnelle, les défis rencontrés et les motivations qui l'ont poussée à fonder le CIFEPE.", city: "Kinshasa" },
+                { id: "yiDMi_x7-jc", title: "Clotilde Kalassa : Vision et Engagement pour le Ministère des Femmes", description: "Dans cette interview exclusive accordée à SD Magistral TV, la Fondatrice de CIFEPE Clotilde Kalassa partage sa vision pour un ministère dédié aux femmes.", city: "Lubumbashi" },
+                { id: "EIPvXWtv1a8", title: "Clotilde Kalassa mène une campagne de sensibilisation auprès des femmes", description: "À travers ses actions, Maman Clotilde K. invite les femmes à s'engager activement en rejoignant le CIFEPE.", city: "Kinshasa" }
             ]
         };
 
-        // URLs des images (nouveau logo Imgur)
+        // URLs des images
         const FLICKR_IMAGES = {
             founder: "https://live.staticflickr.com/65535/55183705353_ecd5a34c4e_b.jpg",
             logo: "https://i.imgur.com/T5n9T0o.png",
@@ -388,6 +382,229 @@
             ]
         };
 
+        // ==================== CHATBOT INTELLIGENT ====================
+        const getBotResponse = (userMessage) => {
+            const msg = userMessage.toLowerCase().trim();
+            
+            if (msg.match(/^(salut|bonjour|coucou|hello|hey|yo|bonsoir)$/)) {
+                return "👋 Bonjour et que la paix du Seigneur soit avec vous ! Je suis l'assistante virtuelle de la CIFEPE. Comment puis-je vous bénir aujourd'hui ? ✨";
+            }
+            
+            if (msg.match(/c[eè]st quoi|c[e']est quoi|pr[eé]sentation|qui êtes-vous|que faites-vous/)) {
+                return "🙏 La CIFEPE (Communauté Internationale des Femmes de Plein Évangile) est une communauté chrétienne qui transforme spirituellement, socialement et économiquement les femmes à travers le monde. Nous sommes présents en RDC, France, USA, UK, Côte d'Ivoire. Notre devise : « Une femme transformée peut changer le monde » 💜";
+            }
+            
+            if (msg.match(/rejoindre|adh[eé]rer|inscription|devenir membre|comment adh[eé]rer/)) {
+                return "🌟 Pour rejoindre notre famille CIFEPE, c'est simple ! Il vous suffit d'être une femme, désirer connaître Jésus-Christ, vous engager à grandir spirituellement et participer à nos activités. Cliquez sur « Rejoindre la communauté » dans le menu ou sur le bouton « Rejoindre » du site. Remplissez le formulaire d'adhésion et nous vous accueillerons à bras ouverts ! 💖";
+            }
+            
+            if (msg.match(/don|donner|soutien|finance|aider financièrement/)) {
+                return "💝 Merci infiniment pour votre générosité ! Votre don permet de soutenir les veuves, les orphelins, et d'accéder à l'éducation pour tous. Rendez-vous dans la page « Don » du site ou directement via le menu principal. Chaque euro compte et change des vies. Que Dieu vous bénisse abondamment ! 🙏";
+            }
+            
+            if (msg.match(/pri[eè]re|intercession|besoin de pri[eè]re|priez pour moi/)) {
+                return "🕊️ Nous prions avec foi pour vous ! La CIFEPE organise des sessions de prière en ligne 4 fois par semaine : Lundi 19h, Mercredi 19h, Vendredi 20h, Dimanche 09h (heure locale). Vous pouvez aussi soumettre votre demande de prière via la page « Prières ». Nous nous unirons à vous dans l'intercession. ✝️";
+            }
+            
+            if (msg.match(/actions|domaines|que faites-vous concr[eè]tement|activit[eé]s/)) {
+                return "📌 Nos domaines d'action :\n• Spirituel : Prières en ligne, enseignements bibliques\n• Social : Aide aux veuves et orphelins\n• Humanitaire : Assistance médicale gratuite\n• Formation : Alphabétisation, entrepreneuriat\n\nNous avons aussi un grand projet de Centre Communautaire de 5 hectares à Lubumbashi ! 🏗️";
+            }
+            
+            if (msg.match(/centre|projet|5 hectares|lubumbashi|terrain/)) {
+                return "🏗️ Notre grand projet : Le Centre Communautaire CIFEPE à Lubumbashi (5 hectares) ! Il comprendra des salles de prière, des écoles de formation, un hôpital et un orphelinat. Un lieu de transformation, refuge et service gratuitement accessible à tous. Nous avons besoin de vos prières et soutiens ! 🙌";
+            }
+            
+            if (msg.match(/livre|ebook|biblioth[eè]que|ressources|t[eé]l[eé]charger/)) {
+                return "📚 La bibliothèque CIFEPE propose des e-books gratuits : « Les 4 Évangiles : Parole de Vie », « Femme de Foi : Héritage et Vision », « Manuel de Formation Spirituelle », « Édifier Ensemble ». Rendez-vous dans la section « E-books » pour les télécharger gratuitement ! 📖";
+            }
+            
+            if (msg.match(/fondatrice|clotilde|kalassa|qui a cr[eé][eé]|histoire/)) {
+                return "👩‍🦰 La fondatrice est Clotilde Kalassa Yasso, née le 26 octobre 1954 à Likasi (RDC). C'est une femme de foi extraordinaire qui a reçu un appel divin pour servir les femmes. Elle a fondé la CIFEPE à Lubumbashi en 2003 (relancée en 2008). Aujourd'hui, des milliers de femmes sont transformées par ce ministère. « Chaque femme porte en elle un trésor divin » 💎";
+            }
+            
+            if (msg.match(/contact|email|t[eé]l[eé]phone|joindre|parler [àa] quelqu'un/)) {
+                return "📧 Vous pouvez nous contacter par email : contact@cifepe.org\n\nNotre équipe vous répondra dans les meilleurs délais. Vous pouvez aussi laisser un message ici, je le transmettrai à nos responsables. Que Dieu vous garde ! ☎️";
+            }
+            
+            if (msg.match(/galerie|photos|vid[eé]os|images|actions en image/)) {
+                return "🎥 Découvrez nos moments forts dans la section « Galerie » du site ! Vous y trouverez des photos de nos rencontres à Lubumbashi, Kinshasa, Paris, Abidjan, ainsi que des vidéos exclusives d'interviews et témoignages. Un aperçu de la joie et de la transformation que Dieu opère parmi nous ! 📸";
+            }
+            
+            if (msg.match(/merci|thank you|gracieux|merci beaucoup/)) {
+                return "🙏 C'est un honneur pour moi de vous servir ! Que le Seigneur vous bénisse et vous garde. N'hésitez pas si vous avez d'autres questions. Restez connectée à la CIFEPE ! 💜";
+            }
+            
+            if (msg.match(/au revoir|bye|ciao|à plus|adieu|revoir/)) {
+                return "👋 Au revoir et que Dieu vous accompagne ! Revenez nous voir quand vous voulez. La CIFEPE prie pour vous. Shalom ! ✨";
+            }
+            
+            return "🤗 Merci pour votre message ! Une sœur de la CIFEPE vous répondra personnellement sous peu. En attendant, puis-je vous orienter vers nos actions, notre galerie, ou les e-books gratuits ? Dites-moi simplement « actions », « galerie », « ebooks » ou « prière ». Que Dieu vous bénisse ! 🙏";
+        };
+
+        const QUICK_REPLIES = [
+            { text: "🙏 Prière", value: "besoin de prière" },
+            { text: "💜 Rejoindre", value: "rejoindre" },
+            { text: "📚 E-books", value: "ebooks" },
+            { text: "🏗️ Projet Centre", value: "centre communautaire" },
+            { text: "👩‍🦰 Fondatrice", value: "fondatrice" },
+            { text: "📧 Contact", value: "contact" },
+        ];
+
+        // Composant Chat amélioré
+        const ChatModal = ({ isOpen, onClose }) => {
+            const [messages, setMessages] = useState([]);
+            const [input, setInput] = useState("");
+            const [isTyping, setIsTyping] = useState(false);
+            const messagesEndRef = useRef(null);
+            const inputRef = useRef(null);
+            
+            useEffect(() => {
+                if (isOpen && messages.length === 0) {
+                    setMessages([{ 
+                        text: "🌟 Bonjour et bienvenue à la CIFEPE ! Je suis votre assistante spirituelle. Posez-moi toutes vos questions sur notre communauté, la foi, nos actions, ou simplement pour discuter. Que puis-je faire pour vous aujourd'hui ? 💜", 
+                        from: 'bot',
+                        timestamp: new Date()
+                    }]);
+                }
+            }, [isOpen, messages.length]);
+            
+            useEffect(() => {
+                if (messagesEndRef.current) {
+                    messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+                }
+            }, [messages]);
+            
+            useEffect(() => {
+                if (isOpen && inputRef.current) {
+                    setTimeout(() => inputRef.current.focus(), 300);
+                }
+            }, [isOpen]);
+            
+            const sendMessage = (text) => {
+                if (!text.trim()) return;
+                
+                const userMsg = { text: text.trim(), from: 'user', timestamp: new Date() };
+                setMessages(prev => [...prev, userMsg]);
+                setInput("");
+                setIsTyping(true);
+                
+                setTimeout(() => {
+                    const reply = getBotResponse(text);
+                    const botMsg = { text: reply, from: 'bot', timestamp: new Date() };
+                    setMessages(prev => [...prev, botMsg]);
+                    setIsTyping(false);
+                }, 600 + Math.random() * 400);
+            };
+            
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage(input);
+                }
+            };
+            
+            const formatTime = (date) => {
+                return date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+            };
+            
+            if (!isOpen) return null;
+            
+            return (
+                <div className="chat-modal-overlay" onClick={onClose}>
+                    <motion.div 
+                        initial={{ opacity: 0, scale: 0.9, y: 20 }} 
+                        animate={{ opacity: 1, scale: 1, y: 0 }} 
+                        exit={{ opacity: 0, scale: 0.9, y: 20 }} 
+                        transition={{ type: "spring", damping: 25, stiffness: 300 }} 
+                        className="chat-modal-content" 
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="bg-gradient-to-r from-primary to-secondary p-4 text-white flex justify-between items-center">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center">
+                                    <Icon name="MessageCircle" size={22} />
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-lg">Assistante CIFEPE</h3>
+                                    <p className="text-xs text-white/80">✨ En ligne • Réponse instantanée</p>
+                                </div>
+                            </div>
+                            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center">
+                                <Icon name="X" size={18} />
+                            </button>
+                        </div>
+                        
+                        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-800/50">
+                            {messages.map((msg, idx) => (
+                                <div key={idx} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-[85%]`}>
+                                        <div className={`p-3 rounded-2xl text-sm md:text-base leading-relaxed message-bubble ${msg.from === 'user' ? 'bg-gradient-to-r from-primary to-secondary text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none shadow-sm'}`}>
+                                            {msg.text}
+                                        </div>
+                                        <div className={`text-[10px] text-gray-400 mt-1 ${msg.from === 'user' ? 'text-right' : 'text-left'}`}>
+                                            {formatTime(msg.timestamp)}
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                            {isTyping && (
+                                <div className="flex justify-start">
+                                    <div className="bg-white dark:bg-gray-700 rounded-2xl rounded-bl-none px-4 py-3 shadow-sm">
+                                        <div className="typing-indicator flex gap-1">
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                            <div ref={messagesEndRef} />
+                        </div>
+                        
+                        {messages.length > 0 && !isTyping && (
+                            <div className="px-4 py-2 bg-gray-50 dark:bg-gray-800/30 border-t border-gray-100 dark:border-gray-700">
+                                <div className="flex flex-wrap gap-2">
+                                    {QUICK_REPLIES.map((reply, idx) => (
+                                        <button
+                                            key={idx}
+                                            onClick={() => sendMessage(reply.value)}
+                                            className="quick-reply-btn text-xs md:text-sm bg-gray-200 dark:bg-gray-700 hover:bg-primary hover:text-white dark:hover:bg-primary px-3 py-1.5 rounded-full transition-all duration-200"
+                                        >
+                                            {reply.text}
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                        
+                        <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
+                            <div className="flex gap-2">
+                                <input
+                                    ref={inputRef}
+                                    type="text"
+                                    value={input}
+                                    onChange={(e) => setInput(e.target.value)}
+                                    onKeyPress={handleKeyPress}
+                                    placeholder="Écrivez votre message..."
+                                    className="flex-1 px-4 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white text-base focus:outline-none focus:border-primary transition"
+                                />
+                                <button 
+                                    onClick={() => sendMessage(input)} 
+                                    disabled={!input.trim()}
+                                    className={`w-12 h-12 rounded-full bg-gradient-to-r from-primary to-secondary text-white flex items-center justify-center transition shadow-md ${!input.trim() ? 'opacity-50 cursor-not-allowed' : 'hover:scale-105'}`}
+                                >
+                                    <Icon name="Send" size={20} />
+                                </button>
+                            </div>
+                            <p className="text-xs text-gray-400 text-center mt-3">
+                                💬 Réponses automatiques basées sur la foi chrétienne • Notre équipe vous répondra si besoin
+                            </p>
+                        </div>
+                    </motion.div>
+                </div>
+            );
+        };
+
+        // ========== COMPOSANTS PRINCIPAUX ==========
+        
         const Button = ({ children, variant = 'primary', onClick, className = '', type = 'button', icon }) => {
             const base = "inline-flex items-center justify-center px-5 py-2.5 md:px-6 md:py-3 rounded-full font-semibold transition-all duration-300 transform hover:scale-[1.02] active:scale-95 shadow-md text-sm md:text-base w-auto";
             const styles = { 
@@ -408,7 +625,6 @@
             </div>
         );
 
-        // Composant de révélation au scroll
         const ScrollReveal = ({ children, direction = 'up', delay = 0 }) => {
             const [isRevealed, setIsRevealed] = useState(false);
             const ref = useRef(null);
@@ -439,7 +655,7 @@
             );
         };
 
-        // --- PAGE GALERIE DÉTAILLÉE ---
+        // PAGE GALERIE
         const GalleryDetailPage = ({ scrollToTop }) => {
             useEffect(() => { scrollToTop(); }, [scrollToTop]);
             return (
@@ -451,22 +667,18 @@
             );
         };
 
-        // --- FOUNDER SECTION (sans lien flickr + animation latérale) ---
+        // FOUNDER SECTION
         const FounderPreview = () => {
             const [expanded, setExpanded] = useState(false);
-            const shortBio = "Je m’appelle Kalassa Yasso, Congolaise, née le 26 octobre 1954 à Likasi, fondatrice et conseillère de la CIFEPE (Communauté Internationale des Femmes de Plein Évangile) et initiatrice de La Maison du Trésor. Mon parcours est celui d’une femme ordinaire, transformée par une rencontre extraordinaire avec Jésus-Christ.";
-            const fullBio = shortBio + " Parler de soi-même est un exercice difficile, surtout lorsqu’il s’agit de retracer un cheminement aussi riche, complexe et porté par la grâce de Dieu. C’est par la foi que tout a commencé, et aujourd’hui, des milliers de femmes sont bénies à travers ce ministère. Je crois fermement que chaque femme porte en elle un trésor divin, et ma vision est de voir des vies transformées par l’amour du Christ. La CIFEPE est le fruit d’un appel à servir, à élever et à guérir. Ensemble, bâtissons des générations de femmes fortes et rayonnantes pour la gloire de Dieu.";
+            const shortBio = "Je m'appelle Kalassa Yasso, Congolaise, née le 26 octobre 1954 à Likasi, fondatrice et conseillère de la CIFEPE (Communauté Internationale des Femmes de Plein Évangile) et initiatrice de La Maison du Trésor. Mon parcours est celui d'une femme ordinaire, transformée par une rencontre extraordinaire avec Jésus-Christ.";
+            const fullBio = shortBio + " Parler de soi-même est un exercice difficile, surtout lorsqu'il s'agit de retracer un cheminement aussi riche, complexe et porté par la grâce de Dieu. C'est par la foi que tout a commencé, et aujourd'hui, des milliers de femmes sont bénies à travers ce ministère. Je crois fermement que chaque femme porte en elle un trésor divin, et ma vision est de voir des vies transformées par l'amour du Christ. La CIFEPE est le fruit d'un appel à servir, à élever et à guérir. Ensemble, bâtissons des générations de femmes fortes et rayonnantes pour la gloire de Dieu.";
             return (
                 <section className="py-12 md:py-16 bg-gradient-to-br from-primary/5 via-secondary/5 to-transparent dark:from-primary/10 dark:via-secondary/10">
                     <div className="max-w-6xl mx-auto px-4">
                         <div className="grid md:grid-cols-2 gap-8 md:gap-10 items-center">
                             <div className="order-2 md:order-1">
                                 <div className="block rounded-2xl shadow-2xl overflow-hidden border-4 border-white dark:border-gray-700 transition-transform duration-300 hover:scale-[1.02]">
-                                    <img 
-                                        src={FLICKR_IMAGES.founder} 
-                                        alt="Clotilde Kalassa - Fondatrice CIFEPE" 
-                                        className="w-full object-cover h-80 md:h-96 object-top founder-sway" 
-                                    />
+                                    <img src={FLICKR_IMAGES.founder} alt="Clotilde Kalassa - Fondatrice CIFEPE" className="w-full object-cover h-80 md:h-96 object-top founder-sway" />
                                 </div>
                             </div>
                             <div className="order-1 md:order-2">
@@ -482,7 +694,7 @@
             );
         };
 
-        // --- SECTION REJOINDRE LA FORCE DES FEMMES (avec zoom in/out continu) ---
+        // SECTION REJOINDRE
         const JoinForceSection = ({ setPage, scrollToTop }) => {
             const images = FLICKR_IMAGES.womenGrid;
             const positions = [
@@ -519,12 +731,7 @@
                                                 className={`relative overflow-hidden rounded-2xl shadow-xl image-card ${positions[idx].className}`}
                                                 style={{ zIndex: positions[idx].zIndex, transform: `rotate(${positions[idx].rotate})` }}
                                             >
-                                                <img 
-                                                    src={img} 
-                                                    alt={`Femme CIFEPE ${idx + 1}`} 
-                                                    className={`w-full h-28 sm:h-32 md:h-40 object-cover transition-transform duration-500 hover:scale-110 zoom-animate`}
-                                                    style={{ animationDelay: positions[idx].zoomDelay }}
-                                                />
+                                                <img src={img} alt={`Femme CIFEPE ${idx + 1}`} className={`w-full h-28 sm:h-32 md:h-40 object-cover transition-transform duration-500 hover:scale-110 zoom-animate`} style={{ animationDelay: positions[idx].zoomDelay }} />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-300"></div>
                                             </motion.div>
                                         ))}
@@ -537,7 +744,7 @@
             );
         };
 
-        // --- SECTION VALEURS ---
+        // SECTION VALEURS
         const ValuesSection = () => (
             <section className="py-12 bg-white dark:bg-dark">
                 <div className="max-w-7xl mx-auto px-4">
@@ -559,7 +766,7 @@
             </section>
         );
 
-        // --- SECTION PROJET CENTRE COMMUNAUTAIRE ---
+        // SECTION PROJET
         const ProjectSection = () => (
             <section className="py-12 bg-gray-50 dark:bg-gray-900">
                 <div className="max-w-7xl mx-auto px-4">
@@ -589,48 +796,59 @@
             </section>
         );
 
-        // --- CHAT MODAL ---
-        const ChatModal = ({ isOpen, onClose }) => {
-            const [messages, setMessages] = useState([{ text: "Bonjour ! Je suis l'assistante virtuelle de la CIFEPE. Comment puis-je vous aider ?", from: 'bot' }]);
-            const [input, setInput] = useState("");
-            const messagesEndRef = useRef(null);
-            
-            useEffect(() => {
-                if (messagesEndRef.current) messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
-            }, [messages]);
-            
-            const sendMessage = () => {
-                if (!input.trim()) return;
-                setMessages([...messages, { text: input, from: 'user' }]);
-                setInput("");
-                setTimeout(() => {
-                    setMessages(prev => [...prev, { text: "Merci pour votre message ! Une sœur vous répondra sous peu. Que Dieu vous bénisse ! 🙏", from: 'bot' }]);
-                }, 800);
-            };
-            
-            if (!isOpen) return null;
-            
+        // PAGE E-BOOKS
+        const EbookPage = ({ addToast, scrollToTop }) => { 
+            useEffect(() => { scrollToTop(); }, [scrollToTop]); 
             return (
-                <div className="chat-modal-overlay" onClick={onClose}>
-                    <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.9 }} transition={{ type: "spring", damping: 25, stiffness: 300 }} className="chat-modal-content" onClick={(e) => e.stopPropagation()}>
-                        <div className="bg-gradient-to-r from-primary to-secondary p-4 text-white flex justify-between items-center">
-                            <div className="flex items-center gap-3"><div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center"><Icon name="MessageCircle" size={22} /></div><div><h3 className="font-bold text-lg">Assistante CIFEPE</h3><p className="text-xs text-white/80">En ligne • Réponse rapide</p></div></div>
-                            <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 transition flex items-center justify-center"><Icon name="X" size={18} /></button>
-                        </div>
-                        <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50 dark:bg-gray-800/50">
-                            {messages.map((msg, idx) => (<div key={idx} className={`flex ${msg.from === 'user' ? 'justify-end' : 'justify-start'}`}><div className={`max-w-[85%] p-3 rounded-2xl text-sm md:text-base leading-relaxed ${msg.from === 'user' ? 'bg-gradient-to-r from-primary to-secondary text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-gray-800 dark:text-gray-200 rounded-bl-none shadow-sm'}`}>{msg.text}</div></div>))}
-                            <div ref={messagesEndRef} />
-                        </div>
-                        <div className="p-4 bg-white dark:bg-gray-900 border-t border-gray-100 dark:border-gray-800">
-                            <div className="flex gap-2"><input type="text" value={input} onChange={(e) => setInput(e.target.value)} onKeyPress={(e) => e.key === 'Enter' && sendMessage()} placeholder="Écrivez votre message..." className="flex-1 px-4 py-3 rounded-full border border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 text-gray-800 dark:text-white text-base focus:outline-none focus:border-primary transition" /><button onClick={sendMessage} className="w-12 h-12 rounded-full bg-gradient-to-r from-primary to-secondary text-white flex items-center justify-center hover:scale-105 transition shadow-md"><Icon name="Send" size={20} /></button></div>
-                            <p className="text-xs text-gray-400 text-center mt-3">Notre équipe vous répond dans les meilleurs délais</p>
-                        </div>
-                    </motion.div>
-                </div>
-            );
+                <motion.div className="max-w-7xl mx-auto px-4 py-12">
+                    <SectionTitle title="Bibliothèque CIFEPE" subtitle="Livres électroniques gratuits sur les Évangiles et la vie communautaire." />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mt-8">
+                        {CONTENT.ebooks.map((book, idx) => (
+                            <Card key={idx} hover className="flex flex-col h-full">
+                                <div className="rounded-xl overflow-hidden mb-4 shadow-md book-cover"><img src={book.cover} alt={book.title} className="w-full h-48 md:h-56 object-cover" /></div>
+                                <h3 className="text-lg md:text-xl font-bold mb-2">{book.title}</h3>
+                                <p className="text-gray-500 text-xs md:text-sm mb-5 flex-grow">{book.desc}</p>
+                                <Button variant="secondary" className="w-full py-2 text-xs md:text-sm" icon="Download" onClick={() => addToast(`📖 "${book.title}" téléchargement simulé`, "success")}>Télécharger gratuit</Button>
+                            </Card>
+                        ))}
+                    </div>
+                </motion.div>
+            ); 
         };
-
-        // --- PAGE DON ---
+        
+        // PAGE PRIÈRES
+        const PrayersPage = ({ addToast, scrollToTop }) => { 
+            useEffect(() => { scrollToTop(); }, [scrollToTop]); 
+            return (
+                <motion.div className="max-w-4xl mx-auto px-4 py-12">
+                    <SectionTitle title="Temps de Prière" subtitle="Sessions en ligne, 4 fois par semaine." />
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-12">
+                        {['Lundi 19h', 'Mercredi 19h', 'Vendredi 20h', 'Dimanche 09h'].map((time,i)=>(
+                            <Card key={i} className="flex items-center gap-3 md:gap-4 p-4 md:p-5">
+                                <Icon name="Clock" className="text-primary" size={24} />
+                                <div>
+                                    <h3 className="font-bold text-sm md:text-base">{time}</h3>
+                                    <p className="text-xs text-gray-500">Enseignement & Intercession</p>
+                                    <button className="text-primary text-xs md:text-sm font-medium mt-1">Rejoindre</button>
+                                </div>
+                            </Card>
+                        ))}
+                    </div>
+                    <Card>
+                        <div>
+                            <h3 className="text-xl md:text-2xl font-bold mb-2">Besoin de prière ?</h3>
+                            <form onSubmit={(e)=>{e.preventDefault();addToast("Demande envoyée, nous prions pour vous.","success");}} className="space-y-4">
+                                <input placeholder="Nom" className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" />
+                                <textarea rows="2" placeholder="Sujet de prière" className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base"></textarea>
+                                <Button type="submit">Envoyer</Button>
+                            </form>
+                        </div>
+                    </Card>
+                </motion.div>
+            ); 
+        };
+        
+        // PAGE DONS
         const DonatePage = ({ addToast, scrollToTop }) => { 
             const [amount,setAmount]=useState(50); 
             useEffect(() => { scrollToTop(); }, [scrollToTop]); 
@@ -638,39 +856,117 @@
                 <motion.div className="max-w-3xl mx-auto px-4 py-12 text-center">
                     <SectionTitle title="Soutenez l'Œuvre" />
                     <div className="bg-primary/5 dark:bg-primary/10 rounded-2xl p-5 mb-8 text-left">
-                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">Chez CIFEPE, chaque don que vous faites est un geste d'espoir. Nous utilisons vos contributions avec transparence pour soutenir les veuves, les orphelins, et permettre l’accès à l’éducation pour tous. Chaque euro compte, et grâce à vous, nous changeons des vies. Merci infiniment de votre générosité.</p>
+                        <p className="text-gray-700 dark:text-gray-300 leading-relaxed text-base">Chez CIFEPE, chaque don que vous faites est un geste d'espoir. Nous utilisons vos contributions avec transparence pour soutenir les veuves, les orphelins, et permettre l'accès à l'éducation pour tous. Chaque euro compte, et grâce à vous, nous changeons des vies. Merci infiniment de votre générosité.</p>
                     </div>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-6">{[10,50,100,200].map(v=><button key={v} onClick={()=>setAmount(v)} className={`py-2 md:py-3 rounded-xl font-bold border-2 transition text-sm ${amount===v?'border-primary bg-primary text-white':'border-gray-200 dark:border-gray-700'}`}>{v}€</button>)}</div>
-                    <Card><input type="number" placeholder="Autre montant" className="w-full text-xl md:text-2xl font-bold border-b-2 py-2 mb-4 dark:bg-transparent dark:border-gray-600 text-center" onChange={(e)=>setAmount(e.target.value)} /><Button onClick={()=>addToast(`Merci pour votre don de ${amount}€ !`,"success")} className="w-full">Faire un don</Button></Card>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-3 mb-6">
+                        {[10,50,100,200].map(v=><button key={v} onClick={()=>setAmount(v)} className={`py-2 md:py-3 rounded-xl font-bold border-2 transition text-sm ${amount===v?'border-primary bg-primary text-white':'border-gray-200 dark:border-gray-700'}`}>{v}€</button>)}
+                    </div>
+                    <Card>
+                        <input type="number" placeholder="Autre montant" className="w-full text-xl md:text-2xl font-bold border-b-2 py-2 mb-4 dark:bg-transparent dark:border-gray-600 text-center" onChange={(e)=>setAmount(e.target.value)} />
+                        <Button onClick={()=>addToast(`Merci pour votre don de ${amount}€ !`,"success")} className="w-full">Faire un don</Button>
+                    </Card>
                 </motion.div>
             ); 
         };
 
-        // --- AUTRES PAGES ---
-        const EbookPage = ({ addToast, scrollToTop }) => { useEffect(() => { scrollToTop(); }, [scrollToTop]); return (<motion.div className="max-w-7xl mx-auto px-4 py-12"><SectionTitle title="Bibliothèque CIFEPE" subtitle="Livres électroniques gratuits sur les Évangiles et la vie communautaire." /><div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 md:gap-6 mt-8">{CONTENT.ebooks.map((book, idx) => (<Card key={idx} hover className="flex flex-col h-full"><div className="rounded-xl overflow-hidden mb-4 shadow-md book-cover"><img src={book.cover} alt={book.title} className="w-full h-48 md:h-56 object-cover" /></div><h3 className="text-lg md:text-xl font-bold mb-2">{book.title}</h3><p className="text-gray-500 text-xs md:text-sm mb-5 flex-grow">{book.desc}</p><Button variant="secondary" className="w-full py-2 text-xs md:text-sm" icon="Download" onClick={() => addToast(`📖 "${book.title}" téléchargement simulé`, "success")}>Télécharger gratuit</Button></Card>))}</div></motion.div>); };
-        
-        const PrayersPage = ({ addToast, scrollToTop }) => { useEffect(() => { scrollToTop(); }, [scrollToTop]); return (<motion.div className="max-w-4xl mx-auto px-4 py-12"><SectionTitle title="Temps de Prière" subtitle="Sessions en ligne, 4 fois par semaine." /><div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-12">{['Lundi 19h', 'Mercredi 19h', 'Vendredi 20h', 'Dimanche 09h'].map((time,i)=><Card key={i} className="flex items-center gap-3 md:gap-4 p-4 md:p-5"><Icon name="Clock" className="text-primary" size={24} /><div><h3 className="font-bold text-sm md:text-base">{time}</h3><p className="text-xs text-gray-500">Enseignement & Intercession</p><button className="text-primary text-xs md:text-sm font-medium mt-1">Rejoindre</button></div></Card>)}</div><Card><div><h3 className="text-xl md:text-2xl font-bold mb-2">Besoin de prière ?</h3><form onSubmit={(e)=>{e.preventDefault();addToast("Demande envoyée, nous prions pour vous.","success");}} className="space-y-4"><input placeholder="Nom" className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" /><textarea rows="2" placeholder="Sujet de prière" className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base"></textarea><Button type="submit">Envoyer</Button></form></div></Card></motion.div>); };
-        
-        const JoinPage = ({ addToast, setPage, scrollToTop }) => { useEffect(() => { scrollToTop(); }, [scrollToTop]); return (<motion.div className="max-w-2xl mx-auto px-4 py-12"><Card><h2 className="text-xl md:text-2xl font-bold text-center mb-4">Rejoignez la CIFEPE</h2><div className="bg-gray-50 dark:bg-gray-900/80 p-4 rounded-xl mb-6"><h3 className="font-bold mb-2 text-sm md:text-base">Conditions :</h3><ul className="space-y-1 text-xs md:text-sm">{CONTENT.joinCriteria.map((c,i)=><li key={i} className="flex gap-2"><span className="text-primary">✓</span>{c}</li>)}</ul></div><form onSubmit={(e)=>{e.preventDefault();addToast("Bienvenue dans la famille CIFEPE !","success");setPage('home');scrollToTop();}} className="space-y-3"><input placeholder="Prénom" required className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" /><input placeholder="Email" type="email" required className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" /><Button type="submit" className="w-full">Valider mon adhésion</Button></form></Card></motion.div>); };
+        // PAGE ADHÉSION
+        const JoinPage = ({ addToast, setPage, scrollToTop }) => { 
+            useEffect(() => { scrollToTop(); }, [scrollToTop]); 
+            return (
+                <motion.div className="max-w-2xl mx-auto px-4 py-12">
+                    <Card>
+                        <h2 className="text-xl md:text-2xl font-bold text-center mb-4">Rejoignez la CIFEPE</h2>
+                        <div className="bg-gray-50 dark:bg-gray-900/80 p-4 rounded-xl mb-6">
+                            <h3 className="font-bold mb-2 text-sm md:text-base">Conditions :</h3>
+                            <ul className="space-y-1 text-xs md:text-sm">{CONTENT.joinCriteria.map((c,i)=><li key={i} className="flex gap-2"><span className="text-primary">✓</span>{c}</li>)}</ul>
+                        </div>
+                        <form onSubmit={(e)=>{e.preventDefault();addToast("Bienvenue dans la famille CIFEPE !","success");setPage('home');scrollToTop();}} className="space-y-3">
+                            <input placeholder="Prénom" required className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" />
+                            <input placeholder="Email" type="email" required className="w-full p-3 rounded-xl border dark:bg-gray-800 dark:border-gray-700 text-base" />
+                            <Button type="submit" className="w-full">Valider mon adhésion</Button>
+                        </form>
+                    </Card>
+                </motion.div>
+            ); 
+        };
 
-        // --- HOMEPAGE ---
+        // PAGE ACCUEIL
         const HomePage = ({ setPage, scrollToTop }) => (
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <section className="relative min-h-[85vh] md:min-h-[80vh] flex items-center justify-center overflow-hidden">
                     <div className="absolute inset-0 z-0"><img src={FLICKR_IMAGES.heroBg} className="w-full h-full object-cover object-center" alt="Bannière CIFEPE" /><div className="absolute inset-0 hero-overlay"></div></div>
-                    <div className="relative z-10 text-center px-5 max-w-5xl mx-auto"><motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}><span className="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium mb-4">✨ Communauté Internationale des Femmes de Plein Évangile</span><h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">{CONTENT.hero.title}</h1><p className="text-base md:text-lg text-gray-200 mb-8 max-w-2xl mx-auto">{CONTENT.hero.subtitle}</p><div className="flex flex-col sm:flex-row gap-3 justify-center items-center"><Button onClick={() => { setPage('join'); scrollToTop(); }} icon="UserPlus">{CONTENT.hero.cta1}</Button><Button variant="outline" onClick={() => { setPage('donate'); scrollToTop(); }} icon="Heart">{CONTENT.hero.cta2}</Button></div></motion.div></div>
+                    <div className="relative z-10 text-center px-5 max-w-5xl mx-auto">
+                        <motion.div initial={{ y: 30, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
+                            <span className="inline-block py-1 px-3 rounded-full bg-white/10 backdrop-blur-md border border-white/20 text-white text-xs font-medium mb-4">✨ Communauté Internationale des Femmes de Plein Évangile</span>
+                            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-4 leading-tight">{CONTENT.hero.title}</h1>
+                            <p className="text-base md:text-lg text-gray-200 mb-8 max-w-2xl mx-auto">{CONTENT.hero.subtitle}</p>
+                            <div className="flex flex-col sm:flex-row gap-3 justify-center items-center">
+                                <Button onClick={() => { setPage('join'); scrollToTop(); }} icon="UserPlus">{CONTENT.hero.cta1}</Button>
+                                <Button variant="outline" onClick={() => { setPage('donate'); scrollToTop(); }} icon="Heart">{CONTENT.hero.cta2}</Button>
+                            </div>
+                        </motion.div>
+                    </div>
                 </section>
-                <section className="py-12 md:py-16 bg-white dark:bg-dark"><div className="max-w-7xl mx-auto px-4"><div className="grid md:grid-cols-2 gap-8 items-start"><ScrollReveal direction="left"><div><SectionTitle title="Qui sommes-nous ?" align="left" /><p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed text-base md:text-lg">La CIFEPE est une communauté chrétienne engagée dans la transformation spirituelle, sociale et économique des femmes.</p><div className="space-y-6"><div className="flex gap-4"><div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0"><Icon name="Target" size={26} /></div><div><h3 className="font-bold text-lg md:text-xl mb-2">Notre Mission</h3><p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">{CONTENT.about.mission}</p></div></div><div className="flex gap-4"><div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary shrink-0"><Icon name="Eye" size={26} /></div><div><h3 className="font-bold text-lg md:text-xl mb-2">Notre Vision</h3><p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">{CONTENT.about.vision}</p></div></div></div></div></ScrollReveal><ScrollReveal direction="right"><Card className="bg-gray-50 dark:bg-gray-800/60 p-6"><div className="flex items-center gap-3 mb-4"><Icon name="History" size={28} /><h3 className="text-xl font-bold">Notre Histoire</h3></div><p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">{CONTENT.about.history}</p></Card></ScrollReveal></div></div></section>
-                <section className="py-12 bg-gray-50 dark:bg-gray-900"><div className="max-w-7xl mx-auto px-4"><SectionTitle title="Nos Domaines d'Action" /><div className="grid grid-cols-2 md:grid-cols-4 gap-4">{CONTENT.actions.map((action,i)=><ScrollReveal key={i} direction="up" delay={i*50}><Card hover className="text-center p-4"><div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><Icon name={action.icon} size={24} className="text-primary" /></div><h3 className="font-bold text-base">{action.title}</h3><p className="text-gray-500 text-xs mt-1">{action.desc}</p></Card></ScrollReveal>)}</div></div></section>
+                <section className="py-12 md:py-16 bg-white dark:bg-dark">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <div className="grid md:grid-cols-2 gap-8 items-start">
+                            <ScrollReveal direction="left">
+                                <div>
+                                    <SectionTitle title="Qui sommes-nous ?" align="left" />
+                                    <p className="text-gray-700 dark:text-gray-300 mb-6 leading-relaxed text-base md:text-lg">La CIFEPE est une communauté chrétienne engagée dans la transformation spirituelle, sociale et économique des femmes.</p>
+                                    <div className="space-y-6">
+                                        <div className="flex gap-4">
+                                            <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center text-primary shrink-0"><Icon name="Target" size={26} /></div>
+                                            <div><h3 className="font-bold text-lg md:text-xl mb-2">Notre Mission</h3><p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">{CONTENT.about.mission}</p></div>
+                                        </div>
+                                        <div className="flex gap-4">
+                                            <div className="w-12 h-12 rounded-xl bg-secondary/10 flex items-center justify-center text-secondary shrink-0"><Icon name="Eye" size={26} /></div>
+                                            <div><h3 className="font-bold text-lg md:text-xl mb-2">Notre Vision</h3><p className="text-gray-600 dark:text-gray-400 text-base leading-relaxed">{CONTENT.about.vision}</p></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </ScrollReveal>
+                            <ScrollReveal direction="right">
+                                <Card className="bg-gray-50 dark:bg-gray-800/60 p-6">
+                                    <div className="flex items-center gap-3 mb-4"><Icon name="History" size={28} /><h3 className="text-xl font-bold">Notre Histoire</h3></div>
+                                    <p className="text-gray-700 dark:text-gray-300 text-base leading-relaxed">{CONTENT.about.history}</p>
+                                </Card>
+                            </ScrollReveal>
+                        </div>
+                    </div>
+                </section>
+                <section className="py-12 bg-gray-50 dark:bg-gray-900">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <SectionTitle title="Nos Domaines d'Action" />
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                            {CONTENT.actions.map((action,i)=><ScrollReveal key={i} direction="up" delay={i*50}><Card hover className="text-center p-4"><div className="w-12 h-12 mx-auto mb-3 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center"><Icon name={action.icon} size={24} className="text-primary" /></div><h3 className="font-bold text-base">{action.title}</h3><p className="text-gray-500 text-xs mt-1">{action.desc}</p></Card></ScrollReveal>)}
+                        </div>
+                    </div>
+                </section>
                 <ValuesSection />
                 <ProjectSection />
                 <JoinForceSection setPage={setPage} scrollToTop={scrollToTop} />
                 <FounderPreview />
-                <section className="py-12 bg-white dark:bg-dark"><div className="max-w-7xl mx-auto px-4"><SectionTitle title="Nos Actions en Images" subtitle="Un aperçu de nos moments de partage et de transformation" /><div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 mb-8">{CONTENT.galleryItems.slice(0, 3).map((item, idx) => (<ScrollReveal key={item.id} direction="up" delay={idx*100}><div className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300"><img src={item.image} alt={item.description} className="w-full h-48 md:h-56 object-cover hover:scale-105 transition-transform duration-500" /><div className="p-3 bg-gray-50 dark:bg-gray-800"><p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{item.description}</p><div className="flex items-center gap-2 text-xs text-primary mt-1"><Icon name="MapPin" size={12} /> {item.city} • {item.date}</div></div></div></ScrollReveal>))}</div><div className="text-center"><Button onClick={() => { setPage('gallery'); scrollToTop(); }} icon="Image" variant="secondary">Voir toute la galerie</Button></div></div></section>
+                <section className="py-12 bg-white dark:bg-dark">
+                    <div className="max-w-7xl mx-auto px-4">
+                        <SectionTitle title="Nos Actions en Images" subtitle="Un aperçu de nos moments de partage et de transformation" />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 md:gap-5 mb-8">
+                            {CONTENT.galleryItems.slice(0, 3).map((item, idx) => (
+                                <ScrollReveal key={item.id} direction="up" delay={idx*100}>
+                                    <div className="rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300">
+                                        <img src={item.image} alt={item.description} className="w-full h-48 md:h-56 object-cover hover:scale-105 transition-transform duration-500" />
+                                        <div className="p-3 bg-gray-50 dark:bg-gray-800"><p className="text-xs md:text-sm font-medium text-gray-700 dark:text-gray-300">{item.description}</p><div className="flex items-center gap-2 text-xs text-primary mt-1"><Icon name="MapPin" size={12} /> {item.city} • {item.date}</div></div>
+                                    </div>
+                                </ScrollReveal>
+                            ))}
+                        </div>
+                        <div className="text-center"><Button onClick={() => { setPage('gallery'); scrollToTop(); }} icon="Image" variant="secondary">Voir toute la galerie</Button></div>
+                    </div>
+                </section>
             </motion.div>
         );
 
-        // --- MAIN APP ---
+        // APP PRINCIPALE
         const App = () => {
             const [page, setPage] = useState('home');
             const [isDark, setIsDark] = useState(false);
@@ -683,16 +979,8 @@
             useEffect(() => { scrollToTop(); }, [page, scrollToTop]);
             useEffect(() => { if (isDark) document.documentElement.classList.add('dark'); else document.documentElement.classList.remove('dark'); }, [isDark]);
             
-            // Forcer le reflow après le chargement pour éviter les problèmes de layout
-            useEffect(() => {
-                window.dispatchEvent(new Event('resize'));
-                setTimeout(() => {
-                    window.scrollBy(0, 1);
-                    window.scrollBy(0, -1);
-                }, 10);
-            }, []);
-            
             const addToast = (msg, type) => { setToast({ msg, type }); setTimeout(() => setToast(null), 3000); };
+            
             const renderPage = () => { 
                 switch(page) { 
                     case 'home': return <HomePage setPage={setPage} scrollToTop={scrollToTop} />; 
@@ -714,38 +1002,14 @@
                         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
                             <div className="col-span-1 md:col-span-1">
                                 <div className="flex items-center gap-3 mb-4">
-                                    <div className="logo-container">
-                                        <img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" width="150" />
-                                    </div>
+                                    <div className="logo-container"><img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" /></div>
                                     <span className="font-bold text-xl text-gray-800 dark:text-white">CIFEPE</span>
                                 </div>
-                                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">
-                                    Communauté Internationale des Femmes de Plein Évangile.
-                                </p>
+                                <p className="text-gray-500 dark:text-gray-400 text-sm leading-relaxed">Communauté Internationale des Femmes de Plein Évangile.</p>
                             </div>
-                            <div>
-                                <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Liens rapides</h3>
-                                <ul className="space-y-2">
-                                    {navItems.map(item => (
-                                        <li key={item.id}>
-                                            <button onClick={() => handleNav(item.id)} className="footer-link text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm transition">
-                                                {item.label}
-                                            </button>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Contact</h3>
-                                <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                                    <li className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> contact@cifepe.org</li>
-                                    <li className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Lubumbashi, RDC</li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-gray-800 dark:text-white mb-4">Suivez-nous</h3>
-                                <div className="flex gap-3"><SocialLink platform="X" href="#" /><SocialLink platform="Facebook" href="#" /><SocialLink platform="YouTube" href="#" /><SocialLink platform="Instagram" href="#" /></div>
-                            </div>
+                            <div><h3 className="font-semibold text-gray-800 dark:text-white mb-4">Liens rapides</h3><ul className="space-y-2">{navItems.map(item => (<li key={item.id}><button onClick={() => handleNav(item.id)} className="footer-link text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary text-sm transition">{item.label}</button></li>))}</ul></div>
+                            <div><h3 className="font-semibold text-gray-800 dark:text-white mb-4">Contact</h3><ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400"><li className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg> contact@cifepe.org</li><li className="flex items-center gap-2"><svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg> Lubumbashi, RDC</li></ul></div>
+                            <div><h3 className="font-semibold text-gray-800 dark:text-white mb-4">Suivez-nous</h3><div className="flex gap-3"><SocialLink platform="X" href="#" /><SocialLink platform="Facebook" href="#" /><SocialLink platform="YouTube" href="#" /><SocialLink platform="Instagram" href="#" /></div></div>
                         </div>
                         <div className="border-t border-gray-200 dark:border-gray-800 pt-6 text-center"><p className="text-gray-400 dark:text-gray-500 text-sm">Copyright © 2026 CIFEPE. Tous droits réservés.</p></div>
                     </div>
@@ -758,7 +1022,7 @@
                         <div className="max-w-7xl mx-auto px-4">
                             <div className="flex justify-between items-center h-14">
                                 <div className="flex items-center gap-2 cursor-pointer" onClick={()=>handleNav('home')}>
-                                    <div className="logo-container"><img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" width="150" /></div>
+                                    <div className="logo-container"><img src={FLICKR_IMAGES.logo} alt="CIFEPE Logo" className="logo-img" /></div>
                                     <span className="font-bold text-base">CIFEPE</span>
                                 </div>
                                 <div className="hidden md:flex items-center gap-4">
@@ -783,7 +1047,8 @@
             );
         };
         
-        const root = ReactDOM.createRoot(document.getElementById('root')); root.render(<App />);
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
     </script>
 </body>
 </html>
